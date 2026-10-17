@@ -1,388 +1,2030 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Home Construction Tracker</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
-:root{--ink:#252b36;--muted:#6b7280;--line:#e8e6e1;--paper:#fffdfa;--bg:#f5f3ee;--saffron:#c76a28;--saffron-dark:#9c4e18;--green:#26775b;--red:#b84949;--shadow:0 12px 32px #2b24140b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:700;transition:.15s}button:hover{transform:translateY(-1px)}.primary{background:var(--saffron);color:#fff}.primary:hover{background:var(--saffron-dark)}.secondary{background:#fff;border:1px solid var(--line);color:var(--ink)}.danger{background:#fff0ef;color:var(--red)}.wrap{max-width:1240px;margin:auto;padding:24px}.hero{position:relative;overflow:hidden;background:#fffdfa;border:1px solid var(--line);border-radius:16px;padding:20px 22px;display:flex;align-items:center;gap:18px;box-shadow:var(--shadow)}.hero h1{font:700 clamp(25px,4vw,36px) 'Playfair Display',serif;margin:0 0 5px}.hero p{margin:0;color:var(--muted);line-height:1.55}.hero .blessing{color:var(--saffron-dark);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}.hero-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.stat,.panel{background:var(--paper);border:1px solid var(--line);border-radius:13px;box-shadow:none}.stat{padding:14px 16px}.stat .label{font-size:12px;color:var(--muted);margin-bottom:8px}.stat .value{font-size:24px;font-weight:700;letter-spacing:-.04em}.stat .sub{font-size:11px;color:var(--muted);margin-top:5px}.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:14px;align-items:start}.panel{padding:16px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.panel h2{font-size:16px;margin:0}.panel-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}label{font-size:12px;font-weight:700;color:#4b5563}input,select,textarea{width:100%;border:1px solid #deddd7;background:#fff;border-radius:9px;padding:10px 11px;outline:none;color:var(--ink);min-width:0}input:focus,select:focus,textarea:focus{border-color:#d28b50;box-shadow:0 0 0 3px #c76a2819}
-input::placeholder,textarea::placeholder{color:#b8bdc7;opacity:1}
-input[type=date]{cursor:pointer;color-scheme:light;min-height:40px}
-input[type=date].date-empty:not(:focus)::-webkit-datetime-edit{color:transparent}
-input[type=date].date-empty:focus::-webkit-datetime-edit{color:var(--ink)}
-input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.9;padding:3px;margin-left:4px}textarea{min-height:70px;resize:vertical}.help{font-size:11px;color:var(--muted);line-height:1.4}.form-buttons{display:flex;gap:8px;margin-top:14px}.form-buttons button{flex:1}.rightcol{min-width:0}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:13px}.toolbar input{max-width:220px}.toolbar select{max-width:180px}.toolbar .spacer{flex:1}.table-wrap{width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;border:1px solid var(--line);border-radius:12px} .table-wrap table{width:100%;min-width:0;table-layout:fixed} .row-actions{white-space:nowrap;min-width:150px;display:flex;gap:5px}.row-actions button{flex-shrink:0}table{width:100%;border-collapse:separate;border-spacing:0;min-width:0;table-layout:fixed;background:#fff}th{font-size:10px;letter-spacing:.02em;text-transform:uppercase;text-align:left;color:#737373;background:#f8f6f1;padding:9px 7px;white-space:normal;overflow-wrap:anywhere}td{padding:9px 7px;border-top:1px solid #efeee9;vertical-align:top;overflow-wrap:anywhere}th:last-child,td:last-child{position:static;z-index:auto;background:inherit;box-shadow:none}th:last-child{background:#f8f6f1}tbody tr:hover td:last-child{background:#fffaf2}tbody tr:hover{background:#fffaf2}.itemname{font-weight:700}.small{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}.amount{font-weight:700;white-space:nowrap}.tag{display:inline-block;background:#f7ead9;color:#8c4b1e;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:700}.tag.paid{background:#e6f4ed;color:#24674f}.tag.pending{background:#fff0d5;color:#8a5b12}.row-actions{display:flex;gap:4px;align-items:center;white-space:nowrap}.row-actions button{padding:4px 6px;font-size:11px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.detail-field{padding:10px;background:#f8f6f1;border-radius:9px;min-width:0}.detail-field.full{grid-column:1/-1}.detail-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#737373;font-weight:700;margin-bottom:5px}.detail-value{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}.details-modal{max-width:720px;max-height:90vh;overflow:auto}.empty{text-align:center;padding:40px 20px;color:var(--muted)}.empty strong{display:block;color:var(--ink);margin-bottom:5px}.note{margin-top:15px;padding:13px 15px;background:#f0f6f2;border:1px solid #dbece1;border-radius:12px;color:#426250;font-size:12px;line-height:1.55}.footer{text-align:center;color:var(--muted);font-size:11px;padding:22px 0 5px}.toast{position:fixed;bottom:20px;right:20px;background:#25372e;color:white;padding:12px 16px;border-radius:12px;box-shadow:0 8px 30px #0002;display:none;z-index:10}.modal-backdrop{display:none;position:fixed;inset:0;background:#17171770;z-index:20;align-items:center;justify-content:center;padding:18px}.modal{background:#fffdfa;padding:22px;border-radius:16px;max-width:460px;width:100%;box-shadow:0 20px 60px #0003}.modal h3{margin-top:0}.modal p{line-height:1.6;color:var(--muted)}.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}.toolbar input,.toolbar select{max-width:none;flex:1 1 180px}.stats{grid-template-columns:repeat(2,1fr)}.hero{flex-wrap:wrap}.hero-actions{margin-left:0;width:100%}.wrap{padding:14px}.panel{padding:15px}}
-@media(max-width:480px){.detail-grid{grid-template-columns:1fr}.detail-field.full{grid-column:auto}.stats{gap:8px}.stat{padding:13px}.stat .value{font-size:20px}.hero{padding:18px}.ganesha{width:58px;height:58px;flex-basis:58px}.ganesha svg{width:45px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.hero-actions button{flex:1}}
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Home Construction Tracker</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap");
+      :root {
+        --ink: #252b36;
+        --muted: #6b7280;
+        --line: #e8e6e1;
+        --paper: #fffdfa;
+        --bg: #f5f3ee;
+        --saffron: #c76a28;
+        --saffron-dark: #9c4e18;
+        --green: #26775b;
+        --red: #b84949;
+        --shadow: 0 12px 32px #2b24140b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+        transition: 0.15s;
+      }
+      button:hover {
+        transform: translateY(-1px);
+      }
+      .primary {
+        background: var(--saffron);
+        color: #fff;
+      }
+      .primary:hover {
+        background: var(--saffron-dark);
+      }
+      .secondary {
+        background: #fff;
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+      .danger {
+        background: #fff0ef;
+        color: var(--red);
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: auto;
+        padding: 24px;
+      }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        background: #fffdfa;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px 22px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: var(--shadow);
+      }
+      .hero h1 {
+        font:
+          700 clamp(25px, 4vw, 36px) "Playfair Display",
+          serif;
+        margin: 0 0 5px;
+      }
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+      .hero .blessing {
+        color: var(--saffron-dark);
+        font-weight: 700;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+      .hero-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .stat,
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        box-shadow: none;
+      }
+      .stat {
+        padding: 14px 16px;
+      }
+      .stat .label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .stat .value {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+      }
+      .stat .sub {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+      }
+      .panel {
+        padding: 16px;
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .panel h2 {
+        font-size: 16px;
+        margin: 0;
+      }
+      .panel-head p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 11px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+      }
+      .field.full {
+        grid-column: 1/-1;
+      }
+      label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #4b5563;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid #deddd7;
+        background: #fff;
+        border-radius: 9px;
+        padding: 10px 11px;
+        outline: none;
+        color: var(--ink);
+        min-width: 0;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #d28b50;
+        box-shadow: 0 0 0 3px #c76a2819;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: #b8bdc7;
+        opacity: 1;
+      }
+      input[type="date"] {
+        cursor: pointer;
+        color-scheme: light;
+        min-height: 40px;
+      }
+      input[type="date"].date-empty:not(:focus)::-webkit-datetime-edit {
+        color: transparent;
+      }
+      input[type="date"].date-empty:focus::-webkit-datetime-edit {
+        color: var(--ink);
+      }
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.9;
+        padding: 3px;
+        margin-left: 4px;
+      }
+      textarea {
+        min-height: 70px;
+        resize: vertical;
+      }
+      .help {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .form-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .form-buttons button {
+        flex: 1;
+      }
+      .rightcol {
+        min-width: 0;
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 13px;
+      }
+      .toolbar input {
+        max-width: 220px;
+      }
+      .toolbar select {
+        max-width: 180px;
+      }
+      .toolbar .spacer {
+        flex: 1;
+      }
+      .table-wrap {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        overflow-y: visible;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      .table-wrap table {
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+      }
+      .row-actions {
+        white-space: nowrap;
+        min-width: 150px;
+        display: flex;
+        gap: 5px;
+      }
+      .row-actions button {
+        flex-shrink: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 0;
+        table-layout: fixed;
+        background: #fff;
+      }
+      th {
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        text-align: left;
+        color: #737373;
+        background: #f8f6f1;
+        padding: 9px 7px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      td {
+        padding: 9px 7px;
+        border-top: 1px solid #efeee9;
+        vertical-align: top;
+        overflow-wrap: anywhere;
+      }
+      th:last-child,
+      td:last-child {
+        position: static;
+        z-index: auto;
+        background: inherit;
+        box-shadow: none;
+      }
+      th:last-child {
+        background: #f8f6f1;
+      }
+      tbody tr:hover td:last-child {
+        background: #fffaf2;
+      }
+      tbody tr:hover {
+        background: #fffaf2;
+      }
+      .itemname {
+        font-weight: 700;
+      }
+      .small {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+      .amount {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .tag {
+        display: inline-block;
+        background: #f7ead9;
+        color: #8c4b1e;
+        padding: 4px 8px;
+        border-radius: 99px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .tag.paid {
+        background: #e6f4ed;
+        color: #24674f;
+      }
+      .tag.pending {
+        background: #fff0d5;
+        color: #8a5b12;
+      }
+      .row-actions {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .row-actions button {
+        padding: 4px 6px;
+        font-size: 11px;
+      }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .detail-field {
+        padding: 10px;
+        background: #f8f6f1;
+        border-radius: 9px;
+        min-width: 0;
+      }
+      .detail-field.full {
+        grid-column: 1/-1;
+      }
+      .detail-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #737373;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .detail-value {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        line-height: 1.45;
+      }
+      .details-modal {
+        max-width: 720px;
+        max-height: 90vh;
+        overflow: auto;
+      }
+      .empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--muted);
+      }
+      .empty strong {
+        display: block;
+        color: var(--ink);
+        margin-bottom: 5px;
+      }
+      .note {
+        margin-top: 15px;
+        padding: 13px 15px;
+        background: #f0f6f2;
+        border: 1px solid #dbece1;
+        border-radius: 12px;
+        color: #426250;
+        font-size: 12px;
+        line-height: 1.55;
+      }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11px;
+        padding: 22px 0 5px;
+      }
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #25372e;
+        color: white;
+        padding: 12px 16px;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px #0002;
+        display: none;
+        z-index: 10;
+      }
+      .modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #17171770;
+        z-index: 20;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+      }
+      .modal {
+        background: #fffdfa;
+        padding: 22px;
+        border-radius: 16px;
+        max-width: 460px;
+        width: 100%;
+        box-shadow: 0 20px 60px #0003;
+      }
+      .modal h3 {
+        margin-top: 0;
+      }
+      .modal p {
+        line-height: 1.6;
+        color: var(--muted);
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 18px;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .toolbar input,
+        .toolbar select {
+          max-width: none;
+          flex: 1 1 180px;
+        }
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .hero {
+          flex-wrap: wrap;
+        }
+        .hero-actions {
+          margin-left: 0;
+          width: 100%;
+        }
+        .wrap {
+          padding: 14px;
+        }
+        .panel {
+          padding: 15px;
+        }
+      }
+      @media (max-width: 480px) {
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+        .detail-field.full {
+          grid-column: auto;
+        }
+        .stats {
+          gap: 8px;
+        }
+        .stat {
+          padding: 13px;
+        }
+        .stat .value {
+          font-size: 20px;
+        }
+        .hero {
+          padding: 18px;
+        }
+        .ganesha {
+          width: 58px;
+          height: 58px;
+          flex-basis: 58px;
+        }
+        .ganesha svg {
+          width: 45px;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .field.full {
+          grid-column: auto;
+        }
+        .hero-actions button {
+          flex: 1;
+        }
+      }
 
-/* Keep the full expense register visible without a horizontal scrollbar. */
-.table-wrap th:nth-child(1),.table-wrap td:nth-child(1){width:11%}
-.table-wrap th:nth-child(2),.table-wrap td:nth-child(2){width:21%}
-.table-wrap th:nth-child(3),.table-wrap td:nth-child(3){width:19%}
-.table-wrap th:nth-child(4),.table-wrap td:nth-child(4),.table-wrap th:nth-child(5),.table-wrap td:nth-child(5),.table-wrap th:nth-child(6),.table-wrap td:nth-child(6){width:10%}
-.table-wrap th:nth-child(7),.table-wrap td:nth-child(7){width:11%}
-.table-wrap th:nth-child(8),.table-wrap td:nth-child(8){width:8%}
-@media(max-width:700px){.table-wrap th,.table-wrap td{padding:7px 4px;font-size:10px}.row-actions{gap:2px}.row-actions .icon-action{width:24px;height:24px;font-size:14px}.tag{padding:3px 5px;font-size:9px}.small{font-size:9px}}
-.row-actions{display:flex;gap:6px;align-items:center;white-space:nowrap}
-.row-actions .icon-action{width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;font-size:17px;line-height:1;border:1px solid var(--line);background:#fff;color:var(--ink)}
-.row-actions .edit-action{color:#9c4e18;background:#fff8ef}
-.row-actions .delete-action{color:#b84949;background:#fff0ef}
-.row-actions .icon-action:hover{transform:translateY(-1px);box-shadow:0 2px 8px #00000010}
-.sheets-panel{display:none!important;margin-top:14px}.sheets-grid{grid-template-columns:1fr 1fr}.sheets-panel .form-buttons{max-width:420px}.sheets-panel .help{overflow-wrap:anywhere}
-@media(max-width:480px){.sheets-grid{grid-template-columns:1fr}.sheets-panel .form-buttons{max-width:none}}
+      /* Keep the full expense register visible without a horizontal scrollbar. */
+      .table-wrap th:nth-child(1),
+      .table-wrap td:nth-child(1) {
+        width: 11%;
+      }
+      .table-wrap th:nth-child(2),
+      .table-wrap td:nth-child(2) {
+        width: 21%;
+      }
+      .table-wrap th:nth-child(3),
+      .table-wrap td:nth-child(3) {
+        width: 19%;
+      }
+      .table-wrap th:nth-child(4),
+      .table-wrap td:nth-child(4),
+      .table-wrap th:nth-child(5),
+      .table-wrap td:nth-child(5),
+      .table-wrap th:nth-child(6),
+      .table-wrap td:nth-child(6) {
+        width: 10%;
+      }
+      .table-wrap th:nth-child(7),
+      .table-wrap td:nth-child(7) {
+        width: 11%;
+      }
+      .table-wrap th:nth-child(8),
+      .table-wrap td:nth-child(8) {
+        width: 8%;
+      }
+      @media (max-width: 700px) {
+        .table-wrap th,
+        .table-wrap td {
+          padding: 7px 4px;
+          font-size: 10px;
+        }
+        .row-actions {
+          gap: 2px;
+        }
+        .row-actions .icon-action {
+          width: 24px;
+          height: 24px;
+          font-size: 14px;
+        }
+        .tag {
+          padding: 3px 5px;
+          font-size: 9px;
+        }
+        .small {
+          font-size: 9px;
+        }
+      }
+      .row-actions {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .row-actions .icon-action {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 17px;
+        line-height: 1;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+      }
+      .row-actions .edit-action {
+        color: #9c4e18;
+        background: #fff8ef;
+      }
+      .row-actions .delete-action {
+        color: #b84949;
+        background: #fff0ef;
+      }
+      .row-actions .icon-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px #00000010;
+      }
+      .sheets-panel {
+        display: none !important;
+        margin-top: 14px;
+      }
+      .sheets-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .sheets-panel .form-buttons {
+        max-width: 420px;
+      }
+      .sheets-panel .help {
+        overflow-wrap: anywhere;
+      }
+      @media (max-width: 480px) {
+        .sheets-grid {
+          grid-template-columns: 1fr;
+        }
+        .sheets-panel .form-buttons {
+          max-width: none;
+        }
+      }
 
+      /* Simple password gate for the public GitHub Pages version. */
+      #loginGate {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f3ee, #eee6da);
+      }
+      #loginGate .login-card {
+        width: min(100%, 390px);
+        background: #fffdfa;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 18px 50px #2b24141a;
+        text-align: center;
+      }
+      #loginGate .login-mark {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        color: var(--saffron-dark);
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      #loginGate h1 {
+        font:
+          700 27px "Playfair Display",
+          serif;
+        margin: 0 0 8px;
+        color: var(--ink);
+      }
+      #loginGate p {
+        color: var(--muted);
+        line-height: 1.5;
+        margin: 0 0 20px;
+      }
+      #loginGate input {
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      #loginGate .login-error {
+        min-height: 18px;
+        color: var(--red);
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      body.app-locked {
+        overflow: hidden;
+      }
+      body.app-locked > .wrap,
+      body.app-locked > .sheets-panel,
+      body.app-locked > .toast,
+      body.app-locked > .modal-backdrop {
+        visibility: hidden;
+      }
 
-/* Simple password gate for the public GitHub Pages version. */
-#loginGate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#f5f3ee,#eee6da)}
-#loginGate .login-card{width:min(100%,390px);background:#fffdfa;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 18px 50px #2b24141a;text-align:center}
-#loginGate .login-mark{font-size:12px;letter-spacing:.08em;color:var(--saffron-dark);font-weight:700;margin-bottom:8px}
-#loginGate h1{font:700 27px 'Playfair Display',serif;margin:0 0 8px;color:var(--ink)}
-#loginGate p{color:var(--muted);line-height:1.5;margin:0 0 20px}
-#loginGate input{margin-bottom:10px;text-align:center}
-#loginGate .login-error{min-height:18px;color:var(--red);font-size:12px;margin-top:10px}
-body.app-locked{overflow:hidden}body.app-locked>.wrap,body.app-locked>.sheets-panel,body.app-locked>.toast,body.app-locked>.modal-backdrop{visibility:hidden}
+      /* Responsive layout improvements: desktop table, compact stacked cards on phones. */
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-width: 320px;
+      }
+      .wrap {
+        width: 100%;
+      }
+      .layout,
+      .rightcol,
+      .panel,
+      .hero,
+      .toolbar,
+      .field {
+        min-width: 0;
+      }
+      input,
+      select,
+      textarea,
+      button {
+        max-width: 100%;
+      }
+      .toolbar input {
+        flex: 1 1 220px;
+      }
+      .toolbar select {
+        flex: 1 1 170px;
+      }
+      @media (max-width: 760px) {
+        .wrap {
+          padding: 12px;
+        }
+        .hero {
+          padding: 16px;
+          gap: 10px;
+        }
+        .hero h1 {
+          font-size: clamp(23px, 6vw, 30px);
+          line-height: 1.15;
+        }
+        .hero p {
+          font-size: 13px;
+        }
+        .stats {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .stat {
+          min-width: 0;
+          padding: 12px;
+        }
+        .stat .value {
+          font-size: clamp(17px, 4.5vw, 22px);
+          overflow-wrap: anywhere;
+        }
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 12px;
+        }
+        .panel {
+          padding: 12px;
+        }
+        .form-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+        .field.full {
+          grid-column: 1/-1;
+        }
+        .toolbar {
+          align-items: stretch;
+        }
+        .toolbar input,
+        .toolbar select {
+          max-width: none;
+          flex: 1 1 100%;
+          width: 100%;
+        }
+        .toolbar .spacer {
+          display: none;
+        }
+        #clearFilters {
+          width: 100%;
+        }
+        .table-wrap {
+          overflow: visible;
+          border: 0;
+          background: transparent;
+        }
+        .table-wrap table,
+        .table-wrap tbody {
+          display: block;
+          width: 100%;
+        }
+        .table-wrap thead {
+          display: none;
+        }
+        .table-wrap tbody tr {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0 12px;
+          background: #fff;
+          border: 1px solid var(--line);
+          border-radius: 12px;
+          margin: 0 0 10px;
+          padding: 10px;
+          box-shadow: 0 2px 8px #2b241408;
+        }
+        .table-wrap tbody td {
+          display: block;
+          width: auto !important;
+          min-width: 0;
+          padding: 8px 0;
+          border: 0;
+          font-size: 12px;
+          overflow-wrap: anywhere;
+        }
+        .table-wrap tbody td::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: var(--muted);
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .table-wrap tbody td:nth-child(2),
+        .table-wrap tbody td:nth-child(3) {
+          grid-column: span 2;
+        }
+        .table-wrap tbody td:nth-child(8) {
+          grid-column: span 2;
+          border-top: 1px solid #efeee9;
+          margin-top: 4px;
+          padding-top: 10px;
+        }
+        .row-actions {
+          gap: 8px;
+        }
+        .row-actions .icon-action {
+          width: 36px;
+          height: 36px;
+          font-size: 18px;
+        }
+        .empty {
+          background: #fff;
+          border: 1px dashed var(--line);
+          border-radius: 12px;
+          padding: 28px 14px;
+        }
+        .modal-backdrop {
+          padding: 12px;
+        }
+        .modal {
+          padding: 18px;
+        }
+      }
+      @media (max-width: 420px) {
+        .wrap {
+          padding: 8px;
+        }
+        .hero {
+          padding: 14px;
+          border-radius: 12px;
+        }
+        .panel {
+          padding: 10px;
+        }
+        .form-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .field.full {
+          grid-column: auto;
+        }
+        .form-buttons button {
+          padding: 11px 8px;
+        }
+        .table-wrap tbody tr {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          padding: 9px;
+          gap: 0 9px;
+        }
+        .table-wrap tbody td {
+          font-size: 11px;
+        }
+        .tag {
+          white-space: normal;
+        }
+        .toast {
+          left: 10px;
+          right: 10px;
+          bottom: 10px;
+          text-align: center;
+        }
+      }
 
-/* Responsive layout improvements: desktop table, compact stacked cards on phones. */
-html{ -webkit-text-size-adjust:100%; }
-body{ min-width:320px; }
-.wrap{ width:100%; }
-.layout,.rightcol,.panel,.hero,.toolbar,.field{ min-width:0; }
-input,select,textarea,button{ max-width:100%; }
-.toolbar input{ flex:1 1 220px; }
-.toolbar select{ flex:1 1 170px; }
-@media(max-width:760px){
- .wrap{padding:12px;}
- .hero{padding:16px;gap:10px;}
- .hero h1{font-size:clamp(23px,6vw,30px);line-height:1.15;}
- .hero p{font-size:13px;}
- .stats{grid-template-columns:repeat(2,minmax(0,1fr));}
- .stat{min-width:0;padding:12px;}
- .stat .value{font-size:clamp(17px,4.5vw,22px);overflow-wrap:anywhere;}
- .layout{grid-template-columns:minmax(0,1fr);gap:12px;}
- .panel{padding:12px;}
- .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
- .field.full{grid-column:1/-1;}
- .toolbar{align-items:stretch;}
- .toolbar input,.toolbar select{max-width:none;flex:1 1 100%;width:100%;}
- .toolbar .spacer{display:none;}
- #clearFilters{width:100%;}
- .table-wrap{overflow:visible;border:0;background:transparent;}
- .table-wrap table,.table-wrap tbody{display:block;width:100%;}
- .table-wrap thead{display:none;}
- .table-wrap tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px;background:#fff;border:1px solid var(--line);border-radius:12px;margin:0 0 10px;padding:10px;box-shadow:0 2px 8px #2b241408;}
- .table-wrap tbody td{display:block;width:auto!important;min-width:0;padding:8px 0;border:0;font-size:12px;overflow-wrap:anywhere;}
- .table-wrap tbody td::before{content:attr(data-label);display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;margin-bottom:4px;}
- .table-wrap tbody td:nth-child(2),.table-wrap tbody td:nth-child(3){grid-column:span 2;}
- .table-wrap tbody td:nth-child(8){grid-column:span 2;border-top:1px solid #efeee9;margin-top:4px;padding-top:10px;}
- .row-actions{gap:8px;}
- .row-actions .icon-action{width:36px;height:36px;font-size:18px;}
- .empty{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:28px 14px;}
- .modal-backdrop{padding:12px;}
- .modal{padding:18px;}
-}
-@media(max-width:420px){
- .wrap{padding:8px;}
- .hero{padding:14px;border-radius:12px;}
- .panel{padding:10px;}
- .form-grid{grid-template-columns:minmax(0,1fr);}
- .field.full{grid-column:auto;}
- .form-buttons button{padding:11px 8px;}
- .table-wrap tbody tr{grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:9px;gap:0 9px;}
- .table-wrap tbody td{font-size:11px;}
- .tag{white-space:normal;}
- .toast{left:10px;right:10px;bottom:10px;text-align:center;}
-}
+      .details-modal {
+        max-width: 820px;
+        max-height: 90vh;
+        overflow: auto;
+      }
+      .details-record {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        margin: 0 0 12px;
+        background: #fff;
+      }
+      .details-record h4 {
+        margin: 0 0 10px;
+        font-size: 15px;
+        overflow-wrap: anywhere;
+      }
+      .details-record .detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .details-record .detail-field {
+        min-width: 0;
+      }
+      .details-empty {
+        padding: 22px;
+        text-align: center;
+        color: var(--muted);
+        background: #f8f6f1;
+        border-radius: 10px;
+      }
+      @media (max-width: 480px) {
+        .details-record .detail-grid {
+          grid-template-columns: 1fr;
+        }
+        .details-modal {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body class="app-locked">
+    <div
+      id="loginGate"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="loginTitle"
+    >
+      <form class="login-card" id="loginForm">
+        <div class="login-mark">॥ श्री गणेशाय नमः ॥</div>
+        <h1 id="loginTitle">Home Construction Tracker</h1>
+        <p>Enter your password to open your tracker.</p>
+        <input
+          id="appPasswordInput"
+          type="password"
+          placeholder="Enter password"
+          autocomplete="current-password"
+          required
+          aria-label="Password"
+        />
+        <button class="primary" type="submit" style="width: 100%">
+          Unlock tracker
+        </button>
+        <div class="login-error" id="loginError" aria-live="polite"></div>
+      </form>
+    </div>
+    <div class="wrap">
+      <header class="hero">
+        <div>
+          <div class="blessing">॥ श्री गणेशाय नमः ॥</div>
+          <h1>Home Construction Tracker</h1>
+          <p>Track purchases, payments and construction expenses.</p>
+        </div>
+      </header>
+      <section class="stats" aria-label="Expense summary">
+        <div class="stat">
+          <div class="label">Total Recorded Cost</div>
+          <div class="value" id="totalCost">₹0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Amount Paid</div>
+          <div class="value" id="totalPaid">₹0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Balance Due</div>
+          <div class="value" id="totalDue">₹0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Entries</div>
+          <div class="value" id="entryCount">0</div>
+          <div class="sub" id="categoryCount"></div>
+        </div>
+      </section>
+      <div class="layout">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 id="formTitle">Add an expense</h2>
+              <p>Enter purchase and payment details.</p>
+            </div>
+            <span class="tag">New entry</span>
+          </div>
+          <form id="expenseForm">
+            <input type="hidden" id="recordId" />
+            <div class="form-grid">
+              <div class="field full">
+                <label for="item">Item / work description *</label
+                ><input
+                  id="item"
+                  required
+                  placeholder="e.g. TMT steel, cement, electrician"
+                />
+              </div>
+              <div class="field">
+                <label for="category">Category *</label
+                ><select id="category" required>
+                  <option>Material</option>
+                  <option>Labour</option>
+                  <option>Transport</option>
+                  <option>Equipment / Rental</option>
+                  <option>Professional / Contractor</option>
+                  <option>Government / Approval</option>
+                  <option>Utility</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="status">Payment status</label
+                ><select id="status">
+                  <option>Paid</option>
+                  <option>Part-paid</option>
+                  <option>Pending</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="purchaseDate">Purchase / work date *</label
+                ><input id="purchaseDate" type="date" required />
+              </div>
+              <div class="field">
+                <label for="paidDate">Payment date</label
+                ><input id="paidDate" type="date" />
+              </div>
+              <div class="field full">
+                <label for="supplier">Bought from / supplier *</label
+                ><input
+                  id="supplier"
+                  required
+                  placeholder="Shop, supplier, contractor name"
+                />
+              </div>
+              <div class="field">
+                <label for="units">Number of units *</label
+                ><input
+                  id="units"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="e.g. 25"
+                />
+              </div>
+              <div class="field">
+                <label for="unitPrice">Rate per unit (₹) *</label
+                ><input
+                  id="unitPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="0.00"
+                />
+              </div>
+              <div class="field">
+                <label for="total">Total cost (₹)</label
+                ><input
+                  id="total"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder=""
+                  readonly
+                />
+              </div>
+              <div class="field">
+                <label for="paid">Amount paid (₹) *</label
+                ><input
+                  id="paid"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  value="0"
+                />
+              </div>
+              <div class="field">
+                <label for="method">Payment method</label
+                ><select id="method">
+                  <option>UPI</option>
+                  <option>Cash</option>
+                  <option>Bank transfer / NEFT</option>
+                  <option>Credit card</option>
+                  <option>Debit card</option>
+                  <option>Cheque</option>
+                  <option>Credit / pay later</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="invoice">Invoice / receipt available?</label
+                ><select id="invoice">
+                  <option>Yes</option>
+                  <option>No</option>
+                  <option>To collect</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label for="notes">Notes / other details</label
+                ><textarea
+                  id="notes"
+                  placeholder="Brand, grade, dimensions, GST, delivery details, who paid, warranty, pending work…"
+                ></textarea>
+              </div>
+            </div>
 
-.details-modal{max-width:820px;max-height:90vh;overflow:auto}.details-record{border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 0 12px;background:#fff}.details-record h4{margin:0 0 10px;font-size:15px;overflow-wrap:anywhere}.details-record .detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.details-record .detail-field{min-width:0}.details-empty{padding:22px;text-align:center;color:var(--muted);background:#f8f6f1;border-radius:10px}@media(max-width:480px){.details-record .detail-grid{grid-template-columns:1fr}.details-modal{padding:14px}}
-</style>
-</head>
-<body class="app-locked">
-<div id="loginGate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
- <form class="login-card" id="loginForm">
-  <div class="login-mark">॥ श्री गणेशाय नमः ॥</div>
-  <h1 id="loginTitle">Home Construction Tracker</h1>
-  <p>Enter your password to open your tracker.</p>
-  <input id="appPasswordInput" type="password" placeholder="Enter password" autocomplete="current-password" required aria-label="Password">
-  <button class="primary" type="submit" style="width:100%">Unlock tracker</button>
-  <div class="login-error" id="loginError" aria-live="polite"></div>
- </form>
-</div>
-<div class="wrap">
-<header class="hero">
- <div>
-  <div class="blessing">॥ श्री गणेशाय नमः ॥</div>
-  <h1>Home Construction Tracker</h1>
-  <p>Track purchases, payments and construction expenses.</p>
- </div>
+            <div class="form-buttons">
+              <button class="primary" type="submit" id="saveBtn">
+                Save expense</button
+              ><button class="secondary" type="button" id="clearBtn">
+                Clear
+              </button>
+            </div>
+          </form>
+        </section>
+        <section class="rightcol">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Expense register</h2>
+                <p>View and manage your expenses.</p>
+              </div>
+              <span class="tag" id="shownTag">0 records</span>
+            </div>
+            <div class="toolbar">
+              <input id="search" placeholder="Search item, supplier, notes…" />
+              <select id="filterCategory">
+                <option value="">All categories</option>
+                <option>Material</option>
+                <option>Labour</option>
+                <option>Transport</option>
+                <option>Equipment / Rental</option>
+                <option>Professional / Contractor</option>
+                <option>Government / Approval</option>
+                <option>Utility</option>
+                <option>Other</option>
+              </select>
+              <select id="filterStatus">
+                <option value="">All payment statuses</option>
+                <option>Paid</option>
+                <option>Part-paid</option>
+                <option>Pending</option>
+              </select>
+              <div class="spacer"></div>
+              <button class="secondary" id="clearFilters">Reset filters</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Item / category</th>
+                    <th>Supplier / payment method</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+              </table>
+              <div class="empty" id="empty">
+                <strong>No expenses yet</strong>Add your first purchase using
+                the form. Your total will update automatically.
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: flex-end; margin-top: 12px"
+            >
+              <button class="secondary" type="button" id="fetchDetailsBtn">
+                Fetch Details
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <section
+      class="panel sheets-panel"
+      aria-label="Google Sheets sync settings"
+    >
+      <div class="panel-head">
+        <div>
+          <h2>Google Sheets automatic sync</h2>
+          <p>
+            Connect once here. New, edited and deleted entries will sync
+            automatically.
+          </p>
+        </div>
+        <span class="tag" id="sheetsStatus">Not connected</span>
+      </div>
+      <div class="form-grid sheets-grid">
+        <div class="field full">
+          <label for="sheetsUrl">Apps Script Web App URL</label
+          ><input
+            id="sheetsUrl"
+            type="url"
+            placeholder="https://script.google.com/macros/s/.../exec"
+            autocomplete="url"
+          />
+        </div>
+        <div class="field">
+          <label for="sheetsToken">Secret token</label
+          ><input
+            id="sheetsToken"
+            type="password"
+            placeholder="Enter the token configured in Apps Script"
+            autocomplete="new-password"
+          />
+        </div>
+        <div class="field">
+          <label>Sync status</label>
+          <div class="help" id="sheetsHelp">
+            Enter the same token as in Apps Script, then click Connect &amp;
+            sync.
+          </div>
+        </div>
+      </div>
+      <div class="form-buttons">
+        <button class="primary" type="button" id="connectSheetsSettings">
+          Connect &amp; sync now</button
+        ><button class="secondary" type="button" id="disconnectSheetsSettings">
+          Disconnect
+        </button>
+      </div>
+      <p class="help">
+        Note: the browser cannot read the Apps Script response in this setup.
+        After connecting, verify the latest execution in Apps Script and confirm
+        the “Construction Expenses” tab updates.
+      </p>
+    </section>
+    <div class="toast" id="toast" role="status"></div>
+    <div
+      class="modal-backdrop"
+      id="detailsModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="detailsTitle"
+    >
+      <div class="modal details-modal">
+        <div class="panel-head">
+          <h3 id="detailsTitle">All Expense Details</h3>
+          <button
+            class="secondary"
+            type="button"
+            id="closeDetailsBtn"
+            aria-label="Close details"
+          >
+            Close
+          </button>
+        </div>
+        <div id="allDetailsContent"></div>
+      </div>
+    </div>
+    <div class="modal-backdrop" id="deleteModal">
+      <div class="modal">
+        <h3>Delete this entry?</h3>
+        <p>
+          This removes the selected expense from this browser. If you need it
+          later, export or back up your records first.
+        </p>
+        <div class="modal-actions">
+          <button class="secondary" id="cancelDelete">Cancel</button
+          ><button class="danger" id="confirmDelete">Delete entry</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // CHANGE THIS PASSWORD before publishing. This is a simple client-side gate, not strong security.
+      const APP_PASSWORD = "2579";
+      const APP_UNLOCK_KEY = "homeConstructionTrackerUnlocked_v1";
+      const DEFAULT_SHEETS_URL =
+        "https://script.google.com/macros/s/AKfycbwTMSPD3zsUDg66JYTRxK-0msE3pq2x0YQHfbVW3-Zp4GsMIgJex1AhnSMD8sgw5VGnmQ/exec";
+      const loginGate = document.getElementById("loginGate");
+      function unlockTracker() {
+        document.body.classList.remove("app-locked");
+        loginGate.style.display = "none";
+        sessionStorage.setItem(APP_UNLOCK_KEY, "1");
+        setupSheetsOnce();
+      }
+      if (sessionStorage.getItem(APP_UNLOCK_KEY) === "1") unlockTracker();
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          if (
+            document.getElementById("appPasswordInput").value === APP_PASSWORD
+          ) {
+            unlockTracker();
+            document.getElementById("loginError").textContent = "";
+          } else {
+            document.getElementById("loginError").textContent =
+              "Incorrect password. Please try again.";
+            document.getElementById("appPasswordInput").value = "";
+            document.getElementById("appPasswordInput").focus();
+          }
+        });
+      const KEY = "grihaLedgerExpenses_v1";
+      function refreshDatePlaceholder(input) {
+        input.classList.toggle("date-empty", !input.value);
+      }
+      ["purchaseDate", "paidDate"].forEach((id) => {
+        const input = document.getElementById(id);
+        if (input) {
+          refreshDatePlaceholder(input);
+          input.addEventListener("input", () => refreshDatePlaceholder(input));
+          input.addEventListener("change", () => refreshDatePlaceholder(input));
+          input.addEventListener("blur", () => refreshDatePlaceholder(input));
+          input.addEventListener("focus", () => refreshDatePlaceholder(input));
+        }
+      });
+      // Default the purchase/work date to today's local date when the form first opens.
+      if (!document.getElementById("purchaseDate").value) {
+        document.getElementById("purchaseDate").value = todayLocal();
+        refreshDatePlaceholder(document.getElementById("purchaseDate"));
+      }
+      const $ = (id) => document.getElementById(id);
+      let records = loadRecords(),
+        pendingDelete = null,
+        excelFileHandle = null,
+        excelSyncBusy = false;
+      let sheetsSyncQueue = Promise.resolve();
+      const SHEETS_URL_KEY = "grihaLedgerSheetsUrl_v1",
+        SHEETS_TOKEN_KEY = "grihaLedgerSheetsToken_v1";
+      function loadRecords() {
+        try {
+          return JSON.parse(localStorage.getItem(KEY) || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+      function ensureSheetsConnection() {
+        let url = localStorage.getItem(SHEETS_URL_KEY) || DEFAULT_SHEETS_URL;
+        let token = localStorage.getItem(SHEETS_TOKEN_KEY) || "";
+        if (url && token) {
+          if (!localStorage.getItem(SHEETS_URL_KEY))
+            localStorage.setItem(SHEETS_URL_KEY, url);
+          return true;
+        }
+        setSheetsStatus(
+          "Not connected",
+          "Enter the Apps Script token once after login.",
+        );
+        return false;
+      }
+      function setupSheetsOnce() {
+        let url = localStorage.getItem(SHEETS_URL_KEY) || DEFAULT_SHEETS_URL;
+        let token = localStorage.getItem(SHEETS_TOKEN_KEY) || "";
+        if (!localStorage.getItem(SHEETS_URL_KEY))
+          localStorage.setItem(SHEETS_URL_KEY, url);
+        if (!token) {
+          token = prompt(
+            "One-time Google Sheets setup: enter the new SECRET_TOKEN configured in your Apps Script. This is saved only in this browser.",
+          );
+          if (token === null || !token.trim()) {
+            setSheetsStatus(
+              "Not connected",
+              "Google Sheets token not configured in this browser. Reload the app to try again.",
+            );
+            return;
+          }
+          token = token.trim();
+          localStorage.setItem(SHEETS_TOKEN_KEY, token);
+        }
+        if ($("sheetsUrl")) $("sheetsUrl").value = url;
+        if ($("sheetsToken")) $("sheetsToken").value = token;
+        setSheetsStatus(
+          "Connecting…",
+          "Loading existing expenses from Google Sheets.",
+        );
+        initializeBackend();
+      }
 
-</header>
-<section class="stats" aria-label="Expense summary">
- <div class="stat"><div class="label">Total Recorded Cost</div><div class="value" id="totalCost">₹0</div></div>
- <div class="stat"><div class="label">Amount Paid</div><div class="value" id="totalPaid">₹0</div></div>
- <div class="stat"><div class="label">Balance Due</div><div class="value" id="totalDue">₹0</div></div>
- <div class="stat"><div class="label">Entries</div><div class="value" id="entryCount">0</div><div class="sub" id="categoryCount"></div></div>
-</section>
-<div class="layout">
- <section class="panel">
-  <div class="panel-head"><div><h2 id="formTitle">Add an expense</h2><p>Enter purchase and payment details.</p></div><span class="tag">New entry</span></div>
-  <form id="expenseForm">
-   <input type="hidden" id="recordId">
-   <div class="form-grid">
-    <div class="field full"><label for="item">Item / work description *</label><input id="item" required placeholder="e.g. TMT steel, cement, electrician"></div>
-    <div class="field"><label for="category">Category *</label><select id="category" required><option>Material</option><option>Labour</option><option>Transport</option><option>Equipment / Rental</option><option>Professional / Contractor</option><option>Government / Approval</option><option>Utility</option><option>Other</option></select></div>
-    <div class="field"><label for="status">Payment status</label><select id="status"><option>Paid</option><option>Part-paid</option><option>Pending</option></select></div>
-    <div class="field"><label for="purchaseDate">Purchase / work date *</label><input id="purchaseDate" type="date" required></div>
-    <div class="field"><label for="paidDate">Payment date</label><input id="paidDate" type="date"></div>
-    <div class="field full"><label for="supplier">Bought from / supplier *</label><input id="supplier" required placeholder="Shop, supplier, contractor name"></div>
-    <div class="field"><label for="units">Number of units *</label><input id="units" type="number" min="0" step="0.01" required placeholder="e.g. 25"></div>
-    <div class="field"><label for="unitPrice">Rate per unit (₹) *</label><input id="unitPrice" type="number" min="0" step="0.01" required placeholder="0.00"></div>
-    <div class="field"><label for="total">Total cost (₹)</label><input id="total" type="number" min="0" step="0.01" required placeholder="" readonly></div>
-    <div class="field"><label for="paid">Amount paid (₹) *</label><input id="paid" type="number" min="0" step="0.01" required value="0"></div>
-    <div class="field"><label for="method">Payment method</label><select id="method"><option>UPI</option><option>Cash</option><option>Bank transfer / NEFT</option><option>Credit card</option><option>Debit card</option><option>Cheque</option><option>Credit / pay later</option><option>Other</option></select></div>
-    <div class="field"><label for="invoice">Invoice / receipt available?</label><select id="invoice"><option>Yes</option><option>No</option><option>To collect</option></select></div>
-    <div class="field full"><label for="notes">Notes / other details</label><textarea id="notes" placeholder="Brand, grade, dimensions, GST, delivery details, who paid, warranty, pending work…"></textarea></div>
-   </div>
-   
-   <div class="form-buttons"><button class="primary" type="submit" id="saveBtn">Save expense</button><button class="secondary" type="button" id="clearBtn">Clear</button></div>
-  </form>
- </section>
- <section class="rightcol">
-  <div class="panel">
-   <div class="panel-head"><div><h2>Expense register</h2><p>View and manage your expenses.</p></div><span class="tag" id="shownTag">0 records</span></div>
-   <div class="toolbar">
-    <input id="search" placeholder="Search item, supplier, notes…">
-    <select id="filterCategory"><option value="">All categories</option><option>Material</option><option>Labour</option><option>Transport</option><option>Equipment / Rental</option><option>Professional / Contractor</option><option>Government / Approval</option><option>Utility</option><option>Other</option></select>
-    <select id="filterStatus"><option value="">All payment statuses</option><option>Paid</option><option>Part-paid</option><option>Pending</option></select>
-    <div class="spacer"></div><button class="secondary" id="clearFilters">Reset filters</button>
-   </div>
-   <div class="table-wrap"><table>
-    <thead><tr><th>Date</th><th>Item / category</th><th>Supplier / payment method</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody id="rows"></tbody>
-   </table><div class="empty" id="empty"><strong>No expenses yet</strong>Add your first purchase using the form. Your total will update automatically.</div></div>
-   <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="secondary" type="button" id="fetchDetailsBtn">Fetch Details</button></div>
-  </div>
-
- </section>
-</div>
-
-</div>
-<section class="panel sheets-panel" aria-label="Google Sheets sync settings">
- <div class="panel-head"><div><h2>Google Sheets automatic sync</h2><p>Connect once here. New, edited and deleted entries will sync automatically.</p></div><span class="tag" id="sheetsStatus">Not connected</span></div>
- <div class="form-grid sheets-grid">
-  <div class="field full"><label for="sheetsUrl">Apps Script Web App URL</label><input id="sheetsUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="url"></div>
-  <div class="field"><label for="sheetsToken">Secret token</label><input id="sheetsToken" type="password" placeholder="Enter the token configured in Apps Script" autocomplete="new-password"></div>
-  <div class="field"><label>Sync status</label><div class="help" id="sheetsHelp">Enter the same token as in Apps Script, then click Connect &amp; sync.</div></div>
- </div>
- <div class="form-buttons"><button class="primary" type="button" id="connectSheetsSettings">Connect &amp; sync now</button><button class="secondary" type="button" id="disconnectSheetsSettings">Disconnect</button></div>
- <p class="help">Note: the browser cannot read the Apps Script response in this setup. After connecting, verify the latest execution in Apps Script and confirm the “Construction Expenses” tab updates.</p>
-</section>
-<div class="toast" id="toast" role="status"></div>
-<div class="modal-backdrop" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle"><div class="modal details-modal"><div class="panel-head"><h3 id="detailsTitle">All Expense Details</h3><button class="secondary" type="button" id="closeDetailsBtn" aria-label="Close details">Close</button></div><div id="allDetailsContent"></div></div></div>
-<div class="modal-backdrop" id="deleteModal"><div class="modal"><h3>Delete this entry?</h3><p>This removes the selected expense from this browser. If you need it later, export or back up your records first.</p><div class="modal-actions"><button class="secondary" id="cancelDelete">Cancel</button><button class="danger" id="confirmDelete">Delete entry</button></div></div></div>
-<script>
-// CHANGE THIS PASSWORD before publishing. This is a simple client-side gate, not strong security.
-const APP_PASSWORD = '2579';
-const APP_UNLOCK_KEY = 'homeConstructionTrackerUnlocked_v1';
-const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby1gyT4xf0WrCW9IpfwuLdCAS39JA6IBzvCIcUxUej6WjgyTJ0CqqoyyY-z7dO8-YGE/exec';
-const loginGate = document.getElementById('loginGate');
-function unlockTracker(){document.body.classList.remove('app-locked');loginGate.style.display='none';sessionStorage.setItem(APP_UNLOCK_KEY,'1');setupSheetsOnce();}
-if(sessionStorage.getItem(APP_UNLOCK_KEY)==='1') unlockTracker();
-document.getElementById('loginForm').addEventListener('submit',function(e){
- e.preventDefault();
- if(document.getElementById('appPasswordInput').value===APP_PASSWORD){unlockTracker();document.getElementById('loginError').textContent='';}
- else {document.getElementById('loginError').textContent='Incorrect password. Please try again.';document.getElementById('appPasswordInput').value='';document.getElementById('appPasswordInput').focus();}
-});
-const KEY='grihaLedgerExpenses_v1';
-function refreshDatePlaceholder(input){input.classList.toggle('date-empty',!input.value)}
-['purchaseDate','paidDate'].forEach(id=>{const input=document.getElementById(id);if(input){refreshDatePlaceholder(input);input.addEventListener('input',()=>refreshDatePlaceholder(input));input.addEventListener('change',()=>refreshDatePlaceholder(input));input.addEventListener('blur',()=>refreshDatePlaceholder(input));input.addEventListener('focus',()=>refreshDatePlaceholder(input))}});
-// Default the purchase/work date to today's local date when the form first opens.
-if(!document.getElementById('purchaseDate').value){document.getElementById('purchaseDate').value=todayLocal();refreshDatePlaceholder(document.getElementById('purchaseDate'));}
-const $=id=>document.getElementById(id);
-let records=loadRecords(), pendingDelete=null, excelFileHandle=null, excelSyncBusy=false;
-let sheetsSyncQueue=Promise.resolve();
-const SHEETS_URL_KEY='grihaLedgerSheetsUrl_v1', SHEETS_TOKEN_KEY='grihaLedgerSheetsToken_v1';
-function loadRecords(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
-function ensureSheetsConnection(){
- let url=localStorage.getItem(SHEETS_URL_KEY)||DEFAULT_SHEETS_URL;
- let token=localStorage.getItem(SHEETS_TOKEN_KEY)||'';
- if(url && token){if(!localStorage.getItem(SHEETS_URL_KEY))localStorage.setItem(SHEETS_URL_KEY,url);return true;}
- setSheetsStatus('Not connected','Enter the Apps Script token once after login.');
- return false;
-}
-function setupSheetsOnce(){
- let url=localStorage.getItem(SHEETS_URL_KEY)||DEFAULT_SHEETS_URL;
- let token=localStorage.getItem(SHEETS_TOKEN_KEY)||'';
- if(!localStorage.getItem(SHEETS_URL_KEY))localStorage.setItem(SHEETS_URL_KEY,url);
- if(!token){
-   token=prompt('One-time Google Sheets setup: enter the new SECRET_TOKEN configured in your Apps Script. This is saved only in this browser.');
-   if(token===null || !token.trim()){
-     setSheetsStatus('Not connected','Google Sheets token not configured in this browser. Reload the app to try again.');
-     return;
-   }
-   token=token.trim();
-   localStorage.setItem(SHEETS_TOKEN_KEY,token);
- }
- if($('sheetsUrl'))$('sheetsUrl').value=url;
- if($('sheetsToken'))$('sheetsToken').value=token;
- setSheetsStatus('Connecting…','Loading existing expenses from Google Sheets.');
- initializeBackend();
-}
-
-function saveRecords(){
- localStorage.setItem(KEY,JSON.stringify(records));
- if(excelFileHandle) syncExcelFile().catch(err=>{console.error(err);toast('Browser could not update the Excel file. Reconnect it to continue automatic saving.')});
- if(ensureSheetsConnection()) syncGoogleSheet(); else setSheetsStatus('Not connected','Saved in this browser only. Complete the one-time Google Sheets setup after logging in.');
-}
-function syncGoogleSheet(){
- const url=localStorage.getItem(SHEETS_URL_KEY), token=localStorage.getItem(SHEETS_TOKEN_KEY);
- if(!url||!token){setSheetsStatus('Not connected','Enter URL and token to connect.');return Promise.resolve(false)}
- const payload=JSON.stringify({token,records});
- sheetsSyncQueue=sheetsSyncQueue.then(()=>fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:payload}))
- .then(()=>{console.info('Google Sheets sync request sent. Check Apps Script > Executions and the spreadsheet to confirm it was accepted.');setSheetsStatus('Request sent','Request sent; verify Apps Script Executions and the sheet.');return true})
- .catch(err=>{console.error('Google Sheets sync request failed',err);setSheetsStatus('Request failed','Check the URL, connection, deployment access and Apps Script Executions.');toast('Google Sheets sync request failed.');return false});
- return sheetsSyncQueue;
-}
-function setSheetsStatus(status,help){const tag=$('sheetsStatus'),desc=$('sheetsHelp');if(tag)tag.textContent=status;if(desc)desc.textContent=help||'';}
-function loadSheetsSettings(){
- const url=localStorage.getItem(SHEETS_URL_KEY),token=localStorage.getItem(SHEETS_TOKEN_KEY);
- if(url)$('sheetsUrl').value=url;
- if(token){$('sheetsToken').value=token;setSheetsStatus('Saved locally','Saved connection found. Click Connect & sync now to send the current register.');}
-}
-$('connectSheetsSettings').addEventListener('click',async()=>{
- const url=$('sheetsUrl').value.trim(),token=$('sheetsToken').value.trim();
- if(!url.startsWith('https://script.google.com/macros/s/')||!url.endsWith('/exec')){alert('Paste a valid deployed Apps Script Web App URL ending in /exec.');return;}
- if(!token){alert('Enter the same secret token configured in Apps Script.');return;}
- localStorage.setItem(SHEETS_URL_KEY,url);localStorage.setItem(SHEETS_TOKEN_KEY,token);
- setSheetsStatus('Sending…','Sending the current expense register to Google Sheets.');
- await syncGoogleSheet();
-});
-$('disconnectSheetsSettings').addEventListener('click',()=>{
- localStorage.removeItem(SHEETS_URL_KEY);localStorage.removeItem(SHEETS_TOKEN_KEY);$('sheetsToken').value='';setSheetsStatus('Not connected','Connection details removed from this browser. Existing spreadsheet data is not deleted.');toast('Google Sheets disconnected on this browser.');
-});
-function money(n){return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(Number(n)||0)}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function dateFmt(s){if(!s)return '—';const p=s.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s}
-function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2600)}
-function updateTotals(){
- const cost=records.reduce((a,r)=>a+Number(r.total||0),0),paid=records.reduce((a,r)=>a+Math.min(Number(r.paid||0),Number(r.total||0)),0);
- $('totalCost').textContent=money(cost);$('totalPaid').textContent=money(paid);$('totalDue').textContent=money(Math.max(0,cost-paid));$('entryCount').textContent=records.length;
- $('categoryCount').textContent=new Set(records.map(r=>r.category)).size+' categories used';
-}
-function render(){
- updateTotals();const q=$('search').value.trim().toLowerCase(),cat=$('filterCategory').value,st=$('filterStatus').value;
- const list=records.filter(r=>(!q||[r.item,r.supplier,r.notes,r.category,r.method].join(' ').toLowerCase().includes(q))&&(!cat||r.category===cat)&&(!st||r.status===st)).sort((a,b)=>(b.purchaseDate||'').localeCompare(a.purchaseDate||'')||b.createdAt-a.createdAt);
- $('shownTag').textContent=`${list.length} record${list.length===1?'':'s'}`;$('empty').style.display=list.length?'none':'block';
- $('rows').innerHTML=list.map(r=>{const due=Math.max(0,Number(r.total||0)-Number(r.paid||0));return `<tr>
+      function saveRecords() {
+        localStorage.setItem(KEY, JSON.stringify(records));
+        if (excelFileHandle)
+          syncExcelFile().catch((err) => {
+            console.error(err);
+            toast(
+              "Browser could not update the Excel file. Reconnect it to continue automatic saving.",
+            );
+          });
+        if (ensureSheetsConnection()) syncGoogleSheet();
+        else
+          setSheetsStatus(
+            "Not connected",
+            "Saved in this browser only. Complete the one-time Google Sheets setup after logging in.",
+          );
+      }
+      function syncGoogleSheet() {
+        const url = localStorage.getItem(SHEETS_URL_KEY),
+          token = localStorage.getItem(SHEETS_TOKEN_KEY);
+        if (!url || !token) {
+          setSheetsStatus("Not connected", "Enter URL and token to connect.");
+          return Promise.resolve(false);
+        }
+        const payload = JSON.stringify({ token, records });
+        sheetsSyncQueue = sheetsSyncQueue
+          .then(() =>
+            fetch(url, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "text/plain;charset=UTF-8" },
+              body: payload,
+            }),
+          )
+          .then(() => {
+            console.info(
+              "Google Sheets sync request sent. Check Apps Script > Executions and the spreadsheet to confirm it was accepted.",
+            );
+            setSheetsStatus(
+              "Request sent",
+              "Request sent; verify Apps Script Executions and the sheet.",
+            );
+            return true;
+          })
+          .catch((err) => {
+            console.error("Google Sheets sync request failed", err);
+            setSheetsStatus(
+              "Request failed",
+              "Check the URL, connection, deployment access and Apps Script Executions.",
+            );
+            toast("Google Sheets sync request failed.");
+            return false;
+          });
+        return sheetsSyncQueue;
+      }
+      function setSheetsStatus(status, help) {
+        const tag = $("sheetsStatus"),
+          desc = $("sheetsHelp");
+        if (tag) tag.textContent = status;
+        if (desc) desc.textContent = help || "";
+      }
+      function loadSheetsSettings() {
+        const url = localStorage.getItem(SHEETS_URL_KEY),
+          token = localStorage.getItem(SHEETS_TOKEN_KEY);
+        if (url) $("sheetsUrl").value = url;
+        if (token) {
+          $("sheetsToken").value = token;
+          setSheetsStatus(
+            "Saved locally",
+            "Saved connection found. Click Connect & sync now to send the current register.",
+          );
+        }
+      }
+      $("connectSheetsSettings").addEventListener("click", async () => {
+        const url = $("sheetsUrl").value.trim(),
+          token = $("sheetsToken").value.trim();
+        if (
+          !url.startsWith("https://script.google.com/macros/s/") ||
+          !url.endsWith("/exec")
+        ) {
+          alert(
+            "Paste a valid deployed Apps Script Web App URL ending in /exec.",
+          );
+          return;
+        }
+        if (!token) {
+          alert("Enter the same secret token configured in Apps Script.");
+          return;
+        }
+        localStorage.setItem(SHEETS_URL_KEY, url);
+        localStorage.setItem(SHEETS_TOKEN_KEY, token);
+        setSheetsStatus(
+          "Sending…",
+          "Sending the current expense register to Google Sheets.",
+        );
+        await syncGoogleSheet();
+      });
+      $("disconnectSheetsSettings").addEventListener("click", () => {
+        localStorage.removeItem(SHEETS_URL_KEY);
+        localStorage.removeItem(SHEETS_TOKEN_KEY);
+        $("sheetsToken").value = "";
+        setSheetsStatus(
+          "Not connected",
+          "Connection details removed from this browser. Existing spreadsheet data is not deleted.",
+        );
+        toast("Google Sheets disconnected on this browser.");
+      });
+      function money(n) {
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 2,
+        }).format(Number(n) || 0);
+      }
+      function esc(s) {
+        return String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+      function dateFmt(s) {
+        if (!s) return "—";
+        const p = s.split("-");
+        return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : s;
+      }
+      function toast(msg) {
+        $("toast").textContent = msg;
+        $("toast").style.display = "block";
+        setTimeout(() => ($("toast").style.display = "none"), 2600);
+      }
+      function updateTotals() {
+        const cost = records.reduce((a, r) => a + Number(r.total || 0), 0),
+          paid = records.reduce(
+            (a, r) => a + Math.min(Number(r.paid || 0), Number(r.total || 0)),
+            0,
+          );
+        $("totalCost").textContent = money(cost);
+        $("totalPaid").textContent = money(paid);
+        $("totalDue").textContent = money(Math.max(0, cost - paid));
+        $("entryCount").textContent = records.length;
+        $("categoryCount").textContent =
+          new Set(records.map((r) => r.category)).size + " categories used";
+      }
+      function render() {
+        updateTotals();
+        const q = $("search").value.trim().toLowerCase(),
+          cat = $("filterCategory").value,
+          st = $("filterStatus").value;
+        const list = records
+          .filter(
+            (r) =>
+              (!q ||
+                [r.item, r.supplier, r.notes, r.category, r.method]
+                  .join(" ")
+                  .toLowerCase()
+                  .includes(q)) &&
+              (!cat || r.category === cat) &&
+              (!st || r.status === st),
+          )
+          .sort(
+            (a, b) =>
+              (b.purchaseDate || "").localeCompare(a.purchaseDate || "") ||
+              b.createdAt - a.createdAt,
+          );
+        $("shownTag").textContent =
+          `${list.length} record${list.length === 1 ? "" : "s"}`;
+        $("empty").style.display = list.length ? "none" : "block";
+        $("rows").innerHTML = list
+          .map((r) => {
+            const due = Math.max(0, Number(r.total || 0) - Number(r.paid || 0));
+            return `<tr>
  <td data-label="Date">${dateFmt(r.purchaseDate)}<div class="small">Paid: ${dateFmt(r.paidDate)}</div></td>
- <td data-label="Item / category"><div class="itemname">${esc(r.item)}</div><div class="small">${esc(r.category)}${(r.units??r.qty)?' · '+esc(r.units??r.qty)+' units':''}</div></td>
- <td data-label="Supplier / payment method">${esc(r.supplier)}<div class="small">${esc(r.method||'Payment method not set')}</div></td>
- <td data-label="Total" class="amount">${money(r.total)}${r.unitPrice?`<div class="small">Rate: ${money(r.unitPrice)}</div>`:''}</td><td>${money(r.paid)}</td><td class="amount">${money(due)}</td>
- <td data-label="Status"><span class="tag ${due<=0?'paid':Number(r.paid)>0?'pending':'pending'}">${due<=0?'Paid':Number(r.paid)>0?'Part-paid':'Pending'}</span></td>
+ <td data-label="Item / category"><div class="itemname">${esc(r.item)}</div><div class="small">${esc(r.category)}${(r.units ?? r.qty) ? " · " + esc(r.units ?? r.qty) + " units" : ""}</div></td>
+ <td data-label="Supplier / payment method">${esc(r.supplier)}<div class="small">${esc(r.method || "Payment method not set")}</div></td>
+ <td data-label="Total" class="amount">${money(r.total)}${r.unitPrice ? `<div class="small">Rate: ${money(r.unitPrice)}</div>` : ""}</td><td>${money(r.paid)}</td><td class="amount">${money(due)}</td>
+ <td data-label="Status"><span class="tag ${due <= 0 ? "paid" : Number(r.paid) > 0 ? "pending" : "pending"}">${due <= 0 ? "Paid" : Number(r.paid) > 0 ? "Part-paid" : "Pending"}</span></td>
  <td data-label="Actions"><div class="row-actions"><button class="icon-action edit-action" title="Edit expense" aria-label="Edit expense" onclick="editRecord('${r.id}')">✎</button><button class="icon-action delete-action" title="Delete expense" aria-label="Delete expense" onclick="askDelete('${r.id}')">×</button></div></td>
- </tr>`}).join('');
-}
-function formData(){const v=id=>$(id).value.trim();return {item:v('item'),category:v('category'),status:v('status'),purchaseDate:v('purchaseDate'),paidDate:v('paidDate'),supplier:v('supplier'),units:Number(v('units')||0),unitPrice:Number(v('unitPrice')||0),total:Number(v('total')||0),paid:Number(v('paid')||0),method:v('method'),invoice:v('invoice'),notes:v('notes')}}
-function formatAmountInput(n){return Number(n.toFixed(2)).toString()}
-function calculateTotal(){const units=Number($('units').value||0),rate=Number($('unitPrice').value||0);$('total').value=formatAmountInput(units*rate)}
-['units','unitPrice'].forEach(id=>$(id).addEventListener('input',calculateTotal));
-function todayLocal(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function clearForm(){ $('expenseForm').reset();$('recordId').value='';$('purchaseDate').value=todayLocal();$('paid').value='0';$('formTitle').textContent='Add an expense';$('saveBtn').textContent='Save expense';}
-$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const data=formData();if(data.paid>data.total){if(!confirm('Amount paid is higher than total cost. Save anyway?'))return}
- const id=$('recordId').value; if(id){records=records.map(r=>r.id===id?{...r,...data,updatedAt:Date.now()}:r);toast('Expense updated')}else{records.push({...data,id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),createdAt:Date.now()});toast('Expense saved')}
- saveRecords();clearForm();render();
-});
-$('clearBtn').addEventListener('click',clearForm);
-window.editRecord=id=>{const r=records.find(x=>x.id===id);if(!r)return;Object.keys(r).forEach(k=>{if($(k))$(k).value=r[k]??''});$('units').value=r.units??r.qty??'';$('unitPrice').value=r.unitPrice==null?'':formatAmountInput(Number(r.unitPrice));$('total').value=r.total==null?'':formatAmountInput(Number(r.total));$('recordId').value=id;$('formTitle').textContent='Edit expense';$('saveBtn').textContent='Update expense';window.scrollTo({top:0,behavior:'smooth'})};
-window.askDelete=id=>{pendingDelete=id;$('deleteModal').style.display='flex'};
-$('cancelDelete').onclick=()=>{$('deleteModal').style.display='none';pendingDelete=null};
-$('confirmDelete').onclick=()=>{if(pendingDelete){records=records.filter(r=>r.id!==pendingDelete);saveRecords();render();toast('Entry deleted')}$('deleteModal').style.display='none';pendingDelete=null};
-['search','filterCategory','filterStatus'].forEach(id=>$(id).addEventListener('input',render));
-$('clearFilters').onclick=()=>{$('search').value='';$('filterCategory').value='';$('filterStatus').value='';render()};
-function csvCell(x){let s=String(x??'');if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
-function csvContent(){const cols=['Item','Category','Purchase Date','Payment Date','Supplier / Bought From','Number of Units','Rate Per Unit (INR)','Total Cost (INR)','Amount Paid (INR)','Balance Due (INR)','Payment Status','Payment Method','Invoice Available','Notes'];const lines=[cols,...records.map(r=>[r.item,r.category,r.purchaseDate,r.paidDate,r.supplier,r.units??r.qty,r.unitPrice,r.total,r.paid,Math.max(0,Number(r.total)-Number(r.paid)),r.status,r.method,r.invoice,r.notes])].map(row=>row.map(csvCell).join(','));return '\ufeff'+lines.join('\r\n')}
-async function syncExcelFile(){if(!excelFileHandle||excelSyncBusy)return;excelSyncBusy=true;try{const writable=await excelFileHandle.createWritable();await writable.write(csvContent());await writable.close();$('connectExcelBtn').textContent='Excel file connected ✓';}finally{excelSyncBusy=false}}
-if($('connectExcelBtn')) $('connectExcelBtn').onclick=async()=>{if(!('showSaveFilePicker' in window)){alert('Automatic direct file updates need a recent version of Chrome or Edge. You can still use .');return}try{excelFileHandle=await window.showSaveFilePicker({suggestedName:'home-construction-expenses.csv',types:[{description:'Excel-compatible CSV file',accept:{'text/csv':['.csv']}}]});await syncExcelFile();toast('Excel file connected. Future changes will sync automatically.')}catch(err){if(err.name!=='AbortError')alert('Could not connect the file. Please try again.')}};
-if($('connectSheetsBtn')) $('connectSheetsBtn').onclick=()=>{const savedUrl=localStorage.getItem(SHEETS_URL_KEY)||'',savedToken=localStorage.getItem(SHEETS_TOKEN_KEY)||'';const url=prompt('Paste your deployed Google Apps Script Web App URL ending in /exec:',savedUrl);if(url===null)return;if(!url.startsWith('https://script.google.com/macros/s/')||!url.endsWith('/exec')){alert('Please enter a valid Apps Script Web App URL ending in /exec.');return}const token=prompt('Enter the same secret token configured in Apps Script:',savedToken);if(token===null)return;if(!token.trim()){alert('Secret token cannot be blank.');return}localStorage.setItem(SHEETS_URL_KEY,url.trim());localStorage.setItem(SHEETS_TOKEN_KEY,token.trim());syncGoogleSheet();toast('Google Sheets connection saved. Verify the sheet received your records.');};
-if($('exportBtn')) $('exportBtn').onclick=()=>{const blob=new Blob([csvContent()],{type:'text/csv;charset=utf-8;'});downloadBlob(blob,'home-construction-expenses.csv');toast('Excel-compatible CSV exported')};
-function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
-if($('backupBtn')) $('backupBtn').onclick=()=>{const blob=new Blob([JSON.stringify({app:'Home Construction Tracker',version:1,exportedAt:new Date().toISOString(),records},null,2)],{type:'application/json'});downloadBlob(blob,'griha-ledger-backup.json');toast('Backup downloaded')};
-if($('importBtn')) $('importBtn').onclick=()=>$('importFile').click();
-$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text()),incoming=Array.isArray(obj)?obj:obj.records;if(!Array.isArray(incoming))throw new Error('Invalid backup');if(!confirm(`Restore ${incoming.length} entries? This replaces the entries currently saved in this browser.`))return;records=incoming;saveRecords();render();toast('Backup restored')}catch(err){alert('Could not restore this file. Please select a Home Construction Tracker JSON backup.')}e.target.value=''};
-function detailField(label,value,full=false){return `<div class="detail-field${full?' full':''}"><div class="detail-label">${esc(label)}</div><div class="detail-value">${esc(value==null||value===''?'—':value)}</div></div>`}
-function fetchBackendRecords(){
- const url=localStorage.getItem(SHEETS_URL_KEY), token=localStorage.getItem(SHEETS_TOKEN_KEY);
- if(!url||!token) return Promise.reject(new Error('Google Sheets is not connected in this browser.'));
- return new Promise((resolve,reject)=>{
-  const callback='hctFetch_'+Date.now()+'_'+Math.floor(Math.random()*1000000);
-  const script=document.createElement('script');
-  const timer=setTimeout(()=>{cleanup();reject(new Error('Timed out while fetching Google Sheets records.'))},15000);
-  function cleanup(){clearTimeout(timer);try{delete window[callback]}catch(e){window[callback]=undefined}if(script.parentNode)script.parentNode.removeChild(script)}
-  window[callback]=(result)=>{cleanup();if(!result||!result.ok||!Array.isArray(result.records)){reject(new Error(result&&result.error?result.error:'Could not read records from Google Sheets.'));return}resolve(result.records)};
-  script.onerror=()=>{cleanup();reject(new Error('Could not reach Apps Script. Check the deployed /exec URL and deployment permissions.'))};
-  script.src=url+'?action=fetch&token='+encodeURIComponent(token)+'&callback='+encodeURIComponent(callback)+'&_='+Date.now();
-  document.head.appendChild(script);
- });
-}
-async function showAllDetails(){
- const content=$('allDetailsContent');
- content.innerHTML='<div class="details-empty">Fetching records from Google Sheets…</div>';
- $('detailsModal').style.display='flex';
- try{
-  const backendRecords=await fetchBackendRecords();
-  records=backendRecords;
-  localStorage.setItem(KEY,JSON.stringify(records));
-  render();
-  setSheetsStatus('Backend fetched','Fetched '+records.length+' records from Google Sheets.');
- }catch(err){
-  content.innerHTML='<div class="details-empty">Could not fetch backend records: '+esc(err.message)+'<br><br>Showing records saved in this browser instead.</div>';
- }
- if(!records.length){content.innerHTML='<div class="details-empty">No expenses have been entered in Google Sheets yet.</div>';}
- else {
-  const sorted=[...records].sort((a,b)=>(b.purchaseDate||'').localeCompare(a.purchaseDate||'')||Number(b.createdAt||0)-Number(a.createdAt||0));
-  content.innerHTML=sorted.map((r,i)=>{
-   const due=Math.max(0,Number(r.total||0)-Number(r.paid||0));
-   return `<article class="details-record"><h4>${i+1}. ${esc(r.item||'Untitled expense')}</h4><div class="detail-grid">
-   ${detailField('Category',r.category)}${detailField('Payment status',r.status)}
-   ${detailField('Purchase / work date',dateFmt(r.purchaseDate))}${detailField('Payment date',dateFmt(r.paidDate))}
-   ${detailField('Supplier / bought from',r.supplier)}${detailField('Number of units',r.units??r.qty)}
-   ${detailField('Rate per unit',money(r.unitPrice))}${detailField('Total cost',money(r.total))}
-   ${detailField('Amount paid',money(r.paid))}${detailField('Balance due',money(due))}
-   ${detailField('Payment method',r.method)}${detailField('Invoice / receipt',r.invoice)}
-   ${detailField('Notes / other details',r.notes,true)}
+ </tr>`;
+          })
+          .join("");
+      }
+      function formData() {
+        const v = (id) => $(id).value.trim();
+        return {
+          item: v("item"),
+          category: v("category"),
+          status: v("status"),
+          purchaseDate: v("purchaseDate"),
+          paidDate: v("paidDate"),
+          supplier: v("supplier"),
+          units: Number(v("units") || 0),
+          unitPrice: Number(v("unitPrice") || 0),
+          total: Number(v("total") || 0),
+          paid: Number(v("paid") || 0),
+          method: v("method"),
+          invoice: v("invoice"),
+          notes: v("notes"),
+        };
+      }
+      function formatAmountInput(n) {
+        return Number(n.toFixed(2)).toString();
+      }
+      function calculateTotal() {
+        const units = Number($("units").value || 0),
+          rate = Number($("unitPrice").value || 0);
+        $("total").value = formatAmountInput(units * rate);
+      }
+      ["units", "unitPrice"].forEach((id) =>
+        $(id).addEventListener("input", calculateTotal),
+      );
+      function todayLocal() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      }
+      function clearForm() {
+        $("expenseForm").reset();
+        $("recordId").value = "";
+        $("purchaseDate").value = todayLocal();
+        $("paid").value = "0";
+        $("formTitle").textContent = "Add an expense";
+        $("saveBtn").textContent = "Save expense";
+      }
+      $("expenseForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = formData();
+        if (data.paid > data.total) {
+          if (!confirm("Amount paid is higher than total cost. Save anyway?"))
+            return;
+        }
+        const id = $("recordId").value;
+        if (id) {
+          records = records.map((r) =>
+            r.id === id ? { ...r, ...data, updatedAt: Date.now() } : r,
+          );
+          toast("Expense updated");
+        } else {
+          records.push({
+            ...data,
+            id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+            createdAt: Date.now(),
+          });
+          toast("Expense saved");
+        }
+        saveRecords();
+        clearForm();
+        render();
+      });
+      $("clearBtn").addEventListener("click", clearForm);
+      window.editRecord = (id) => {
+        const r = records.find((x) => x.id === id);
+        if (!r) return;
+        Object.keys(r).forEach((k) => {
+          if ($(k)) $(k).value = r[k] ?? "";
+        });
+        $("units").value = r.units ?? r.qty ?? "";
+        $("unitPrice").value =
+          r.unitPrice == null ? "" : formatAmountInput(Number(r.unitPrice));
+        $("total").value =
+          r.total == null ? "" : formatAmountInput(Number(r.total));
+        $("recordId").value = id;
+        $("formTitle").textContent = "Edit expense";
+        $("saveBtn").textContent = "Update expense";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+      window.askDelete = (id) => {
+        pendingDelete = id;
+        $("deleteModal").style.display = "flex";
+      };
+      $("cancelDelete").onclick = () => {
+        $("deleteModal").style.display = "none";
+        pendingDelete = null;
+      };
+      $("confirmDelete").onclick = () => {
+        if (pendingDelete) {
+          records = records.filter((r) => r.id !== pendingDelete);
+          saveRecords();
+          render();
+          toast("Entry deleted");
+        }
+        $("deleteModal").style.display = "none";
+        pendingDelete = null;
+      };
+      ["search", "filterCategory", "filterStatus"].forEach((id) =>
+        $(id).addEventListener("input", render),
+      );
+      $("clearFilters").onclick = () => {
+        $("search").value = "";
+        $("filterCategory").value = "";
+        $("filterStatus").value = "";
+        render();
+      };
+      function csvCell(x) {
+        let s = String(x ?? "");
+        if (/^[=+\-@]/.test(s)) s = "'" + s;
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      function csvContent() {
+        const cols = [
+          "Item",
+          "Category",
+          "Purchase Date",
+          "Payment Date",
+          "Supplier / Bought From",
+          "Number of Units",
+          "Rate Per Unit (INR)",
+          "Total Cost (INR)",
+          "Amount Paid (INR)",
+          "Balance Due (INR)",
+          "Payment Status",
+          "Payment Method",
+          "Invoice Available",
+          "Notes",
+        ];
+        const lines = [
+          cols,
+          ...records.map((r) => [
+            r.item,
+            r.category,
+            r.purchaseDate,
+            r.paidDate,
+            r.supplier,
+            r.units ?? r.qty,
+            r.unitPrice,
+            r.total,
+            r.paid,
+            Math.max(0, Number(r.total) - Number(r.paid)),
+            r.status,
+            r.method,
+            r.invoice,
+            r.notes,
+          ]),
+        ].map((row) => row.map(csvCell).join(","));
+        return "\ufeff" + lines.join("\r\n");
+      }
+      async function syncExcelFile() {
+        if (!excelFileHandle || excelSyncBusy) return;
+        excelSyncBusy = true;
+        try {
+          const writable = await excelFileHandle.createWritable();
+          await writable.write(csvContent());
+          await writable.close();
+          $("connectExcelBtn").textContent = "Excel file connected ✓";
+        } finally {
+          excelSyncBusy = false;
+        }
+      }
+      if ($("connectExcelBtn"))
+        $("connectExcelBtn").onclick = async () => {
+          if (!("showSaveFilePicker" in window)) {
+            alert(
+              "Automatic direct file updates need a recent version of Chrome or Edge. You can still use .",
+            );
+            return;
+          }
+          try {
+            excelFileHandle = await window.showSaveFilePicker({
+              suggestedName: "home-construction-expenses.csv",
+              types: [
+                {
+                  description: "Excel-compatible CSV file",
+                  accept: { "text/csv": [".csv"] },
+                },
+              ],
+            });
+            await syncExcelFile();
+            toast(
+              "Excel file connected. Future changes will sync automatically.",
+            );
+          } catch (err) {
+            if (err.name !== "AbortError")
+              alert("Could not connect the file. Please try again.");
+          }
+        };
+      if ($("connectSheetsBtn"))
+        $("connectSheetsBtn").onclick = () => {
+          const savedUrl = localStorage.getItem(SHEETS_URL_KEY) || "",
+            savedToken = localStorage.getItem(SHEETS_TOKEN_KEY) || "";
+          const url = prompt(
+            "Paste your deployed Google Apps Script Web App URL ending in /exec:",
+            savedUrl,
+          );
+          if (url === null) return;
+          if (
+            !url.startsWith("https://script.google.com/macros/s/") ||
+            !url.endsWith("/exec")
+          ) {
+            alert(
+              "Please enter a valid Apps Script Web App URL ending in /exec.",
+            );
+            return;
+          }
+          const token = prompt(
+            "Enter the same secret token configured in Apps Script:",
+            savedToken,
+          );
+          if (token === null) return;
+          if (!token.trim()) {
+            alert("Secret token cannot be blank.");
+            return;
+          }
+          localStorage.setItem(SHEETS_URL_KEY, url.trim());
+          localStorage.setItem(SHEETS_TOKEN_KEY, token.trim());
+          syncGoogleSheet();
+          toast(
+            "Google Sheets connection saved. Verify the sheet received your records.",
+          );
+        };
+      if ($("exportBtn"))
+        $("exportBtn").onclick = () => {
+          const blob = new Blob([csvContent()], {
+            type: "text/csv;charset=utf-8;",
+          });
+          downloadBlob(blob, "home-construction-expenses.csv");
+          toast("Excel-compatible CSV exported");
+        };
+      function downloadBlob(blob, name) {
+        const url = URL.createObjectURL(blob),
+          a = document.createElement("a");
+        a.href = url;
+        a.download = name;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+      if ($("backupBtn"))
+        $("backupBtn").onclick = () => {
+          const blob = new Blob(
+            [
+              JSON.stringify(
+                {
+                  app: "Home Construction Tracker",
+                  version: 1,
+                  exportedAt: new Date().toISOString(),
+                  records,
+                },
+                null,
+                2,
+              ),
+            ],
+            { type: "application/json" },
+          );
+          downloadBlob(blob, "griha-ledger-backup.json");
+          toast("Backup downloaded");
+        };
+      if ($("importBtn"))
+        $("importBtn").onclick = () => $("importFile").click();
+      $("importFile").onchange = async (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        try {
+          const obj = JSON.parse(await f.text()),
+            incoming = Array.isArray(obj) ? obj : obj.records;
+          if (!Array.isArray(incoming)) throw new Error("Invalid backup");
+          if (
+            !confirm(
+              `Restore ${incoming.length} entries? This replaces the entries currently saved in this browser.`,
+            )
+          )
+            return;
+          records = incoming;
+          saveRecords();
+          render();
+          toast("Backup restored");
+        } catch (err) {
+          alert(
+            "Could not restore this file. Please select a Home Construction Tracker JSON backup.",
+          );
+        }
+        e.target.value = "";
+      };
+      function detailField(label, value, full = false) {
+        return `<div class="detail-field${full ? " full" : ""}"><div class="detail-label">${esc(label)}</div><div class="detail-value">${esc(value == null || value === "" ? "—" : value)}</div></div>`;
+      }
+      function fetchBackendRecords() {
+        const url = localStorage.getItem(SHEETS_URL_KEY),
+          token = localStorage.getItem(SHEETS_TOKEN_KEY);
+        if (!url || !token)
+          return Promise.reject(
+            new Error("Google Sheets is not connected in this browser."),
+          );
+        return new Promise((resolve, reject) => {
+          const callback =
+            "hctFetch_" +
+            Date.now() +
+            "_" +
+            Math.floor(Math.random() * 1000000);
+          const script = document.createElement("script");
+          const timer = setTimeout(() => {
+            cleanup();
+            reject(
+              new Error("Timed out while fetching Google Sheets records."),
+            );
+          }, 15000);
+          function cleanup() {
+            clearTimeout(timer);
+            try {
+              delete window[callback];
+            } catch (e) {
+              window[callback] = undefined;
+            }
+            if (script.parentNode) script.parentNode.removeChild(script);
+          }
+          window[callback] = (result) => {
+            cleanup();
+            if (!result || !result.ok || !Array.isArray(result.records)) {
+              reject(
+                new Error(
+                  result && result.error
+                    ? result.error
+                    : "Could not read records from Google Sheets.",
+                ),
+              );
+              return;
+            }
+            resolve(result.records);
+          };
+          script.onerror = () => {
+            cleanup();
+            reject(
+              new Error(
+                "Could not reach Apps Script. Check the deployed /exec URL and deployment permissions.",
+              ),
+            );
+          };
+          script.src =
+            url +
+            "?action=fetch&token=" +
+            encodeURIComponent(token) +
+            "&callback=" +
+            encodeURIComponent(callback) +
+            "&_=" +
+            Date.now();
+          document.head.appendChild(script);
+        });
+      }
+      async function showAllDetails() {
+        const content = $("allDetailsContent");
+        content.innerHTML =
+          '<div class="details-empty">Fetching records from Google Sheets…</div>';
+        $("detailsModal").style.display = "flex";
+        try {
+          const backendRecords = await fetchBackendRecords();
+          records = backendRecords;
+          localStorage.setItem(KEY, JSON.stringify(records));
+          render();
+          setSheetsStatus(
+            "Backend fetched",
+            "Fetched " + records.length + " records from Google Sheets.",
+          );
+        } catch (err) {
+          content.innerHTML =
+            '<div class="details-empty">Could not fetch backend records: ' +
+            esc(err.message) +
+            "<br><br>Showing records saved in this browser instead.</div>";
+        }
+        if (!records.length) {
+          content.innerHTML =
+            '<div class="details-empty">No expenses have been entered in Google Sheets yet.</div>';
+        } else {
+          const sorted = [...records].sort(
+            (a, b) =>
+              (b.purchaseDate || "").localeCompare(a.purchaseDate || "") ||
+              Number(b.createdAt || 0) - Number(a.createdAt || 0),
+          );
+          content.innerHTML = sorted
+            .map((r, i) => {
+              const due = Math.max(
+                0,
+                Number(r.total || 0) - Number(r.paid || 0),
+              );
+              return `<article class="details-record"><h4>${i + 1}. ${esc(r.item || "Untitled expense")}</h4><div class="detail-grid">
+   ${detailField("Category", r.category)}${detailField("Payment status", r.status)}
+   ${detailField("Purchase / work date", dateFmt(r.purchaseDate))}${detailField("Payment date", dateFmt(r.paidDate))}
+   ${detailField("Supplier / bought from", r.supplier)}${detailField("Number of units", r.units ?? r.qty)}
+   ${detailField("Rate per unit", money(r.unitPrice))}${detailField("Total cost", money(r.total))}
+   ${detailField("Amount paid", money(r.paid))}${detailField("Balance due", money(due))}
+   ${detailField("Payment method", r.method)}${detailField("Invoice / receipt", r.invoice)}
+   ${detailField("Notes / other details", r.notes, true)}
    </div></article>`;
-  }).join('');
- }
- $('detailsModal').style.display='flex';
-}
-$('fetchDetailsBtn').addEventListener('click',showAllDetails);
-$('closeDetailsBtn').addEventListener('click',()=>$('detailsModal').style.display='none');
-$('detailsModal').addEventListener('click',e=>{if(e.target===$('detailsModal'))$('detailsModal').style.display='none'});
-clearForm();
-loadSheetsSettings();
-['purchaseDate','paidDate'].forEach(id=>{const el=$(id);el.addEventListener('click',()=>{if(typeof el.showPicker==='function'){try{el.showPicker()}catch(e){}}});});
-render();
-// Load backend records after the one-time connection has been saved.
-async function initializeBackend(){
- const url=localStorage.getItem(SHEETS_URL_KEY), token=localStorage.getItem(SHEETS_TOKEN_KEY);
- if(!url||!token){setSheetsStatus('Not connected','Complete the one-time Google Sheets setup after login.');return;}
- try{
-  const backendRecords=await fetchBackendRecords();
-  // If the backend is empty but this browser has legacy records, migrate them once.
-  if(backendRecords.length===0 && records.length>0){
-    setSheetsStatus('Migrating records…','The sheet is empty; sending this browser’s existing records once.');
-    await syncGoogleSheet();
-    return;
-  }
-  records=backendRecords;
-  localStorage.setItem(KEY,JSON.stringify(records));render();
-  setSheetsStatus('Connected','Loaded '+records.length+' records from Google Sheets.');
- }catch(err){
-  setSheetsStatus('Backend unavailable','Could not load Google Sheets records: '+err.message);
-  console.error('Backend load failed',err);
- }
-}
-if(sessionStorage.getItem(APP_UNLOCK_KEY)==='1') initializeBackend();
-</script>
-</body>
+            })
+            .join("");
+        }
+        $("detailsModal").style.display = "flex";
+      }
+      $("fetchDetailsBtn").addEventListener("click", showAllDetails);
+      $("closeDetailsBtn").addEventListener(
+        "click",
+        () => ($("detailsModal").style.display = "none"),
+      );
+      $("detailsModal").addEventListener("click", (e) => {
+        if (e.target === $("detailsModal"))
+          $("detailsModal").style.display = "none";
+      });
+      clearForm();
+      loadSheetsSettings();
+      ["purchaseDate", "paidDate"].forEach((id) => {
+        const el = $(id);
+        el.addEventListener("click", () => {
+          if (typeof el.showPicker === "function") {
+            try {
+              el.showPicker();
+            } catch (e) {}
+          }
+        });
+      });
+      render();
+      // Load backend records after the one-time connection has been saved.
+      async function initializeBackend() {
+        const url = localStorage.getItem(SHEETS_URL_KEY),
+          token = localStorage.getItem(SHEETS_TOKEN_KEY);
+        if (!url || !token) {
+          setSheetsStatus(
+            "Not connected",
+            "Complete the one-time Google Sheets setup after login.",
+          );
+          return;
+        }
+        try {
+          const backendRecords = await fetchBackendRecords();
+          // If the backend is empty but this browser has legacy records, migrate them once.
+          if (backendRecords.length === 0 && records.length > 0) {
+            setSheetsStatus(
+              "Migrating records…",
+              "The sheet is empty; sending this browser’s existing records once.",
+            );
+            await syncGoogleSheet();
+            return;
+          }
+          records = backendRecords;
+          localStorage.setItem(KEY, JSON.stringify(records));
+          render();
+          setSheetsStatus(
+            "Connected",
+            "Loaded " + records.length + " records from Google Sheets.",
+          );
+        } catch (err) {
+          setSheetsStatus(
+            "Backend unavailable",
+            "Could not load Google Sheets records: " + err.message,
+          );
+          console.error("Backend load failed", err);
+        }
+      }
+      if (sessionStorage.getItem(APP_UNLOCK_KEY) === "1") initializeBackend();
+    </script>
+  </body>
 </html>
