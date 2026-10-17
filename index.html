@@ -719,6 +719,11 @@
           <h1>Home Construction Tracker</h1>
           <p>Track purchases, payments and construction expenses.</p>
         </div>
+        <div class="hero-actions">
+          <button class="secondary" type="button" id="displaySpreadsheetBtn">
+            Display in Spreadsheet
+          </button>
+        </div>
       </header>
       <section class="stats" aria-label="Expense summary">
         <div class="stat">
@@ -1007,6 +1012,35 @@
     <script>
       // CHANGE THIS PASSWORD before publishing. This is a simple client-side gate, not strong security.
       const APP_PASSWORD = "2579";
+      // The spreadsheet URL is saved in this browser after you enter it the first time.
+      const SPREADSHEET_LINK_KEY = "homeConstructionTrackerSpreadsheetUrl_v1";
+      const displaySpreadsheetBtn = document.getElementById(
+        "displaySpreadsheetBtn",
+      );
+      if (displaySpreadsheetBtn)
+        displaySpreadsheetBtn.addEventListener("click", function () {
+          let url = localStorage.getItem(SPREADSHEET_LINK_KEY) || "";
+          if (!url) {
+            url = prompt(
+              "Paste the URL of your private Google Sheet (the page where your construction expenses are stored):",
+              "https://docs.google.com/spreadsheets/d/",
+            );
+            if (url === null) return;
+            url = url.trim();
+            if (
+              !/^https:\/\/docs\.google\.com\/spreadsheets\/d\/[A-Za-z0-9_-]+/.test(
+                url,
+              )
+            ) {
+              alert(
+                "Please enter a valid Google Sheets URL, then click Display in Spreadsheet again.",
+              );
+              return;
+            }
+            localStorage.setItem(SPREADSHEET_LINK_KEY, url);
+          }
+          window.location.href = url;
+        });
       const APP_UNLOCK_KEY = "homeConstructionTrackerUnlocked_v1";
       const loginGate = document.getElementById("loginGate");
       function unlockTracker() {
@@ -1045,6 +1079,11 @@
           input.addEventListener("focus", () => refreshDatePlaceholder(input));
         }
       });
+      // Default the purchase/work date to today's local date when the form first opens.
+      if (!document.getElementById("purchaseDate").value) {
+        document.getElementById("purchaseDate").value = todayLocal();
+        refreshDatePlaceholder(document.getElementById("purchaseDate"));
+      }
       const $ = (id) => document.getElementById(id);
       let records = loadRecords(),
         pendingDelete = null,
@@ -1060,6 +1099,52 @@
           return [];
         }
       }
+      function ensureSheetsConnection() {
+        let url = localStorage.getItem(SHEETS_URL_KEY) || "";
+        let token = localStorage.getItem(SHEETS_TOKEN_KEY) || "";
+        if (url && token) return true;
+        const connect = confirm(
+          "Google Sheets is not connected in this browser. Connect now so this expense register can be sent to your spreadsheet?",
+        );
+        if (!connect) {
+          setSheetsStatus(
+            "Not connected",
+            "Your changes are saved in this browser only. Connect Google Sheets to send them to the spreadsheet.",
+          );
+          toast("Saved on this browser only — Google Sheets is not connected.");
+          return false;
+        }
+        url = prompt(
+          "Paste your deployed Google Apps Script Web App URL ending in /exec:",
+          "",
+        );
+        if (url === null) return false;
+        url = url.trim();
+        if (
+          !url.startsWith("https://script.google.com/macros/s/") ||
+          !url.endsWith("/exec")
+        ) {
+          alert(
+            "That does not look like a valid Apps Script Web App URL ending in /exec.",
+          );
+          return false;
+        }
+        token = prompt(
+          "Enter the same secret token configured in your Apps Script:",
+          "",
+        );
+        if (token === null) return false;
+        token = token.trim();
+        if (!token) {
+          alert("The secret token cannot be blank.");
+          return false;
+        }
+        localStorage.setItem(SHEETS_URL_KEY, url);
+        localStorage.setItem(SHEETS_TOKEN_KEY, token);
+        if ($("sheetsUrl")) $("sheetsUrl").value = url;
+        if ($("sheetsToken")) $("sheetsToken").value = token;
+        return true;
+      }
       function saveRecords() {
         localStorage.setItem(KEY, JSON.stringify(records));
         if (excelFileHandle)
@@ -1069,11 +1154,7 @@
               "Browser could not update the Excel file. Reconnect it to continue automatic saving.",
             );
           });
-        if (
-          localStorage.getItem(SHEETS_URL_KEY) &&
-          localStorage.getItem(SHEETS_TOKEN_KEY)
-        )
-          syncGoogleSheet();
+        if (ensureSheetsConnection()) syncGoogleSheet();
       }
       function syncGoogleSheet() {
         const url = localStorage.getItem(SHEETS_URL_KEY),
