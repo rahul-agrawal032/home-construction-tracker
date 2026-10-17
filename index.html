@@ -94,6 +94,7 @@ input,select,textarea,button{ max-width:100%; }
  .toast{left:10px;right:10px;bottom:10px;text-align:center;}
 }
 
+.details-modal{max-width:820px;max-height:90vh;overflow:auto}.details-record{border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 0 12px;background:#fff}.details-record h4{margin:0 0 10px;font-size:15px;overflow-wrap:anywhere}.details-record .detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.details-record .detail-field{min-width:0}.details-empty{padding:22px;text-align:center;color:var(--muted);background:#f8f6f1;border-radius:10px}@media(max-width:480px){.details-record .detail-grid{grid-template-columns:1fr}.details-modal{padding:14px}}
 </style>
 </head>
 <body class="app-locked">
@@ -159,6 +160,7 @@ input,select,textarea,button{ max-width:100%; }
     <thead><tr><th>Date</th><th>Item / category</th><th>Supplier / payment method</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
     <tbody id="rows"></tbody>
    </table><div class="empty" id="empty"><strong>No expenses yet</strong>Add your first purchase using the form. Your total will update automatically.</div></div>
+   <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="secondary" type="button" id="fetchDetailsBtn">Fetch Details</button></div>
   </div>
 
  </section>
@@ -176,6 +178,7 @@ input,select,textarea,button{ max-width:100%; }
  <p class="help">Note: the browser cannot read the Apps Script response in this setup. After connecting, verify the latest execution in Apps Script and confirm the “Construction Expenses” tab updates.</p>
 </section>
 <div class="toast" id="toast" role="status"></div>
+<div class="modal-backdrop" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle"><div class="modal details-modal"><div class="panel-head"><h3 id="detailsTitle">All Expense Details</h3><button class="secondary" type="button" id="closeDetailsBtn" aria-label="Close details">Close</button></div><div id="allDetailsContent"></div></div></div>
 <div class="modal-backdrop" id="deleteModal"><div class="modal"><h3>Delete this entry?</h3><p>This removes the selected expense from this browser. If you need it later, export or back up your records first.</p><div class="modal-actions"><button class="secondary" id="cancelDelete">Cancel</button><button class="danger" id="confirmDelete">Delete entry</button></div></div></div>
 <script>
 // CHANGE THIS PASSWORD before publishing. This is a simple client-side gate, not strong security.
@@ -298,10 +301,77 @@ function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.
 if($('backupBtn')) $('backupBtn').onclick=()=>{const blob=new Blob([JSON.stringify({app:'Home Construction Tracker',version:1,exportedAt:new Date().toISOString(),records},null,2)],{type:'application/json'});downloadBlob(blob,'griha-ledger-backup.json');toast('Backup downloaded')};
 if($('importBtn')) $('importBtn').onclick=()=>$('importFile').click();
 $('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text()),incoming=Array.isArray(obj)?obj:obj.records;if(!Array.isArray(incoming))throw new Error('Invalid backup');if(!confirm(`Restore ${incoming.length} entries? This replaces the entries currently saved in this browser.`))return;records=incoming;saveRecords();render();toast('Backup restored')}catch(err){alert('Could not restore this file. Please select a Home Construction Tracker JSON backup.')}e.target.value=''};
+function detailField(label,value,full=false){return `<div class="detail-field${full?' full':''}"><div class="detail-label">${esc(label)}</div><div class="detail-value">${esc(value==null||value===''?'—':value)}</div></div>`}
+function fetchBackendRecords(){
+ const url=localStorage.getItem(SHEETS_URL_KEY), token=localStorage.getItem(SHEETS_TOKEN_KEY);
+ if(!url||!token) return Promise.reject(new Error('Google Sheets is not connected in this browser.'));
+ return new Promise((resolve,reject)=>{
+  const callback='hctFetch_'+Date.now()+'_'+Math.floor(Math.random()*1000000);
+  const script=document.createElement('script');
+  const timer=setTimeout(()=>{cleanup();reject(new Error('Timed out while fetching Google Sheets records.'))},15000);
+  function cleanup(){clearTimeout(timer);try{delete window[callback]}catch(e){window[callback]=undefined}if(script.parentNode)script.parentNode.removeChild(script)}
+  window[callback]=(result)=>{cleanup();if(!result||!result.ok||!Array.isArray(result.records)){reject(new Error(result&&result.error?result.error:'Could not read records from Google Sheets.'));return}resolve(result.records)};
+  script.onerror=()=>{cleanup();reject(new Error('Could not reach Apps Script. Check the deployed /exec URL and deployment permissions.'))};
+  script.src=url+'?action=fetch&token='+encodeURIComponent(token)+'&callback='+encodeURIComponent(callback)+'&_='+Date.now();
+  document.head.appendChild(script);
+ });
+}
+async function showAllDetails(){
+ const content=$('allDetailsContent');
+ content.innerHTML='<div class="details-empty">Fetching records from Google Sheets…</div>';
+ $('detailsModal').style.display='flex';
+ try{
+  const backendRecords=await fetchBackendRecords();
+  records=backendRecords;
+  localStorage.setItem(KEY,JSON.stringify(records));
+  render();
+  setSheetsStatus('Backend fetched','Fetched '+records.length+' records from Google Sheets.');
+ }catch(err){
+  content.innerHTML='<div class="details-empty">Could not fetch backend records: '+esc(err.message)+'<br><br>Showing records saved in this browser instead.</div>';
+ }
+ if(!records.length){content.innerHTML='<div class="details-empty">No expenses have been entered in Google Sheets yet.</div>';}
+ else {
+  const sorted=[...records].sort((a,b)=>(b.purchaseDate||'').localeCompare(a.purchaseDate||'')||Number(b.createdAt||0)-Number(a.createdAt||0));
+  content.innerHTML=sorted.map((r,i)=>{
+   const due=Math.max(0,Number(r.total||0)-Number(r.paid||0));
+   return `<article class="details-record"><h4>${i+1}. ${esc(r.item||'Untitled expense')}</h4><div class="detail-grid">
+   ${detailField('Category',r.category)}${detailField('Payment status',r.status)}
+   ${detailField('Purchase / work date',dateFmt(r.purchaseDate))}${detailField('Payment date',dateFmt(r.paidDate))}
+   ${detailField('Supplier / bought from',r.supplier)}${detailField('Number of units',r.units??r.qty)}
+   ${detailField('Rate per unit',money(r.unitPrice))}${detailField('Total cost',money(r.total))}
+   ${detailField('Amount paid',money(r.paid))}${detailField('Balance due',money(due))}
+   ${detailField('Payment method',r.method)}${detailField('Invoice / receipt',r.invoice)}
+   ${detailField('Notes / other details',r.notes,true)}
+   </div></article>`;
+  }).join('');
+ }
+ $('detailsModal').style.display='flex';
+}
+$('fetchDetailsBtn').addEventListener('click',showAllDetails);
+$('closeDetailsBtn').addEventListener('click',()=>$('detailsModal').style.display='none');
+$('detailsModal').addEventListener('click',e=>{if(e.target===$('detailsModal'))$('detailsModal').style.display='none'});
 clearForm();
 loadSheetsSettings();
 ['purchaseDate','paidDate'].forEach(id=>{const el=$(id);el.addEventListener('click',()=>{if(typeof el.showPicker==='function'){try{el.showPicker()}catch(e){}}});});
 render();
+// On startup, load the backend as the shared source of truth when a connection exists.
+(async function initializeBackend(){
+ const url=localStorage.getItem(SHEETS_URL_KEY), token=localStorage.getItem(SHEETS_TOKEN_KEY);
+ if(!url||!token)return;
+ try{
+  const backendRecords=await fetchBackendRecords();
+  if(backendRecords.length>0 || records.length===0){
+   records=backendRecords;localStorage.setItem(KEY,JSON.stringify(records));render();
+   setSheetsStatus('Connected','Loaded '+records.length+' records from Google Sheets.');
+  } else {
+   // First-time migration: browser has entries but the backend is empty.
+   syncGoogleSheet();
+  }
+ }catch(err){
+  setSheetsStatus('Backend unavailable','Could not load Google Sheets records: '+err.message);
+  console.error('Backend load failed',err);
+ }
+})();
 </script>
 </body>
 </html>
