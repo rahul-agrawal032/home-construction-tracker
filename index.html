@@ -685,6 +685,204 @@
       body.app-locked > .modal-backdrop {
         visibility: hidden;
       }
+
+      /* Responsive layout improvements: desktop table, compact stacked cards on phones. */
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-width: 320px;
+      }
+      .wrap {
+        width: 100%;
+      }
+      .layout,
+      .rightcol,
+      .panel,
+      .hero,
+      .toolbar,
+      .field {
+        min-width: 0;
+      }
+      input,
+      select,
+      textarea,
+      button {
+        max-width: 100%;
+      }
+      .toolbar input {
+        flex: 1 1 220px;
+      }
+      .toolbar select {
+        flex: 1 1 170px;
+      }
+      @media (max-width: 760px) {
+        .wrap {
+          padding: 12px;
+        }
+        .hero {
+          padding: 16px;
+          gap: 10px;
+        }
+        .hero h1 {
+          font-size: clamp(23px, 6vw, 30px);
+          line-height: 1.15;
+        }
+        .hero p {
+          font-size: 13px;
+        }
+        .stats {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .stat {
+          min-width: 0;
+          padding: 12px;
+        }
+        .stat .value {
+          font-size: clamp(17px, 4.5vw, 22px);
+          overflow-wrap: anywhere;
+        }
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 12px;
+        }
+        .panel {
+          padding: 12px;
+        }
+        .form-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+        .field.full {
+          grid-column: 1/-1;
+        }
+        .toolbar {
+          align-items: stretch;
+        }
+        .toolbar input,
+        .toolbar select {
+          max-width: none;
+          flex: 1 1 100%;
+          width: 100%;
+        }
+        .toolbar .spacer {
+          display: none;
+        }
+        #clearFilters {
+          width: 100%;
+        }
+        .table-wrap {
+          overflow: visible;
+          border: 0;
+          background: transparent;
+        }
+        .table-wrap table,
+        .table-wrap tbody {
+          display: block;
+          width: 100%;
+        }
+        .table-wrap thead {
+          display: none;
+        }
+        .table-wrap tbody tr {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0 12px;
+          background: #fff;
+          border: 1px solid var(--line);
+          border-radius: 12px;
+          margin: 0 0 10px;
+          padding: 10px;
+          box-shadow: 0 2px 8px #2b241408;
+        }
+        .table-wrap tbody td {
+          display: block;
+          width: auto !important;
+          min-width: 0;
+          padding: 8px 0;
+          border: 0;
+          font-size: 12px;
+          overflow-wrap: anywhere;
+        }
+        .table-wrap tbody td::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: var(--muted);
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .table-wrap tbody td:nth-child(2),
+        .table-wrap tbody td:nth-child(3) {
+          grid-column: span 2;
+        }
+        .table-wrap tbody td:nth-child(8) {
+          grid-column: span 2;
+          border-top: 1px solid #efeee9;
+          margin-top: 4px;
+          padding-top: 10px;
+        }
+        .row-actions {
+          gap: 8px;
+        }
+        .row-actions .icon-action {
+          width: 36px;
+          height: 36px;
+          font-size: 18px;
+        }
+        .empty {
+          background: #fff;
+          border: 1px dashed var(--line);
+          border-radius: 12px;
+          padding: 28px 14px;
+        }
+        .modal-backdrop {
+          padding: 12px;
+        }
+        .modal {
+          padding: 18px;
+        }
+      }
+      @media (max-width: 420px) {
+        .wrap {
+          padding: 8px;
+        }
+        .hero {
+          padding: 14px;
+          border-radius: 12px;
+        }
+        .panel {
+          padding: 10px;
+        }
+        .form-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .field.full {
+          grid-column: auto;
+        }
+        .form-buttons button {
+          padding: 11px 8px;
+        }
+        .table-wrap tbody tr {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          padding: 9px;
+          gap: 0 9px;
+        }
+        .table-wrap tbody td {
+          font-size: 11px;
+        }
+        .tag {
+          white-space: normal;
+        }
+        .toast {
+          left: 10px;
+          right: 10px;
+          bottom: 10px;
+          text-align: center;
+        }
+      }
     </style>
   </head>
   <body class="app-locked">
@@ -718,11 +916,6 @@
           <div class="blessing">॥ श्री गणेशाय नमः ॥</div>
           <h1>Home Construction Tracker</h1>
           <p>Track purchases, payments and construction expenses.</p>
-        </div>
-        <div class="hero-actions">
-          <button class="secondary" type="button" id="displaySpreadsheetBtn">
-            Display in Spreadsheet
-          </button>
         </div>
       </header>
       <section class="stats" aria-label="Expense summary">
@@ -1012,36 +1205,6 @@
     <script>
       // CHANGE THIS PASSWORD before publishing. This is a simple client-side gate, not strong security.
       const APP_PASSWORD = "2579";
-      // The spreadsheet URL is saved in this browser after you enter it the first time.
-      const SPREADSHEET_LINK_KEY = "homeConstructionTrackerSpreadsheetUrl_v1";
-      const displaySpreadsheetBtn = document.getElementById(
-        "displaySpreadsheetBtn",
-      );
-      if (displaySpreadsheetBtn)
-        displaySpreadsheetBtn.addEventListener("click", function () {
-          let url = localStorage.getItem(SPREADSHEET_LINK_KEY) || "";
-          if (!url) {
-            url = prompt(
-              "Paste the URL of your private Google Sheet (the page where your construction expenses are stored):",
-              "https://docs.google.com/spreadsheets/d/",
-            );
-            if (url === null) return;
-            url = url.trim();
-            if (
-              !/^https:\/\/docs\.google\.com\/spreadsheets\/d\/[A-Za-z0-9_-]+/.test(
-                url,
-              )
-            ) {
-              alert(
-                "Please enter a valid Google Sheets URL, then click Display in Spreadsheet again.",
-              );
-              return;
-            }
-            localStorage.setItem(SPREADSHEET_LINK_KEY, url);
-          }
-          window.location.href = url;
-        });
-      const APP_UNLOCK_KEY = "homeConstructionTrackerUnlocked_v1";
       const loginGate = document.getElementById("loginGate");
       function unlockTracker() {
         document.body.classList.remove("app-locked");
@@ -1317,12 +1480,12 @@
           .map((r) => {
             const due = Math.max(0, Number(r.total || 0) - Number(r.paid || 0));
             return `<tr>
- <td>${dateFmt(r.purchaseDate)}<div class="small">Paid: ${dateFmt(r.paidDate)}</div></td>
- <td><div class="itemname">${esc(r.item)}</div><div class="small">${esc(r.category)}${(r.units ?? r.qty) ? " · " + esc(r.units ?? r.qty) + " units" : ""}</div></td>
- <td>${esc(r.supplier)}<div class="small">${esc(r.method || "Payment method not set")}</div></td>
- <td class="amount">${money(r.total)}${r.unitPrice ? `<div class="small">Rate: ${money(r.unitPrice)}</div>` : ""}</td><td>${money(r.paid)}</td><td class="amount">${money(due)}</td>
- <td><span class="tag ${due <= 0 ? "paid" : Number(r.paid) > 0 ? "pending" : "pending"}">${due <= 0 ? "Paid" : Number(r.paid) > 0 ? "Part-paid" : "Pending"}</span></td>
- <td><div class="row-actions"><button class="icon-action edit-action" title="Edit expense" aria-label="Edit expense" onclick="editRecord('${r.id}')">✎</button><button class="icon-action delete-action" title="Delete expense" aria-label="Delete expense" onclick="askDelete('${r.id}')">×</button></div></td>
+ <td data-label="Date">${dateFmt(r.purchaseDate)}<div class="small">Paid: ${dateFmt(r.paidDate)}</div></td>
+ <td data-label="Item / category"><div class="itemname">${esc(r.item)}</div><div class="small">${esc(r.category)}${(r.units ?? r.qty) ? " · " + esc(r.units ?? r.qty) + " units" : ""}</div></td>
+ <td data-label="Supplier / payment method">${esc(r.supplier)}<div class="small">${esc(r.method || "Payment method not set")}</div></td>
+ <td data-label="Total" class="amount">${money(r.total)}${r.unitPrice ? `<div class="small">Rate: ${money(r.unitPrice)}</div>` : ""}</td><td>${money(r.paid)}</td><td class="amount">${money(due)}</td>
+ <td data-label="Status"><span class="tag ${due <= 0 ? "paid" : Number(r.paid) > 0 ? "pending" : "pending"}">${due <= 0 ? "Paid" : Number(r.paid) > 0 ? "Part-paid" : "Pending"}</span></td>
+ <td data-label="Actions"><div class="row-actions"><button class="icon-action edit-action" title="Edit expense" aria-label="Edit expense" onclick="editRecord('${r.id}')">✎</button><button class="icon-action delete-action" title="Delete expense" aria-label="Delete expense" onclick="askDelete('${r.id}')">×</button></div></td>
  </tr>`;
           })
           .join("");
