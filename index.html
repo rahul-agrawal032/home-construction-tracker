@@ -184,8 +184,9 @@ input,select,textarea,button{ max-width:100%; }
 // CHANGE THIS PASSWORD before publishing. This is a simple client-side gate, not strong security.
 const APP_PASSWORD = '2579';
 const APP_UNLOCK_KEY = 'homeConstructionTrackerUnlocked_v1';
+const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby1gyT4xf0WrCW9IpfwuLdCAS39JA6IBzvCIcUxUej6WjgyTJ0CqqoyyY-z7dO8-YGE/exec';
 const loginGate = document.getElementById('loginGate');
-function unlockTracker(){document.body.classList.remove('app-locked');loginGate.style.display='none';sessionStorage.setItem(APP_UNLOCK_KEY,'1');}
+function unlockTracker(){document.body.classList.remove('app-locked');loginGate.style.display='none';sessionStorage.setItem(APP_UNLOCK_KEY,'1');setupSheetsOnce();}
 if(sessionStorage.getItem(APP_UNLOCK_KEY)==='1') unlockTracker();
 document.getElementById('loginForm').addEventListener('submit',function(e){
  e.preventDefault();
@@ -203,28 +204,35 @@ let sheetsSyncQueue=Promise.resolve();
 const SHEETS_URL_KEY='grihaLedgerSheetsUrl_v1', SHEETS_TOKEN_KEY='grihaLedgerSheetsToken_v1';
 function loadRecords(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
 function ensureSheetsConnection(){
- let url=localStorage.getItem(SHEETS_URL_KEY)||'';
+ let url=localStorage.getItem(SHEETS_URL_KEY)||DEFAULT_SHEETS_URL;
  let token=localStorage.getItem(SHEETS_TOKEN_KEY)||'';
- if(url && token) return true;
- const connect=confirm('Google Sheets is not connected in this browser. Connect now so this expense register can be sent to your spreadsheet?');
- if(!connect){setSheetsStatus('Not connected','Your changes are saved in this browser only. Connect Google Sheets to send them to the spreadsheet.');toast('Saved on this browser only — Google Sheets is not connected.');return false;}
- url=prompt('Paste your deployed Google Apps Script Web App URL ending in /exec:','');
- if(url===null)return false;
- url=url.trim();
- if(!url.startsWith('https://script.google.com/macros/s/')||!url.endsWith('/exec')){alert('That does not look like a valid Apps Script Web App URL ending in /exec.');return false;}
- token=prompt('Enter the same secret token configured in your Apps Script:','');
- if(token===null)return false;
- token=token.trim();
- if(!token){alert('The secret token cannot be blank.');return false;}
- localStorage.setItem(SHEETS_URL_KEY,url);localStorage.setItem(SHEETS_TOKEN_KEY,token);
+ if(url && token){if(!localStorage.getItem(SHEETS_URL_KEY))localStorage.setItem(SHEETS_URL_KEY,url);return true;}
+ setSheetsStatus('Not connected','Enter the Apps Script token once after login.');
+ return false;
+}
+function setupSheetsOnce(){
+ let url=localStorage.getItem(SHEETS_URL_KEY)||DEFAULT_SHEETS_URL;
+ let token=localStorage.getItem(SHEETS_TOKEN_KEY)||'';
+ if(!localStorage.getItem(SHEETS_URL_KEY))localStorage.setItem(SHEETS_URL_KEY,url);
+ if(!token){
+   token=prompt('One-time Google Sheets setup: enter the new SECRET_TOKEN configured in your Apps Script. This is saved only in this browser.');
+   if(token===null || !token.trim()){
+     setSheetsStatus('Not connected','Google Sheets token not configured in this browser. Reload the app to try again.');
+     return;
+   }
+   token=token.trim();
+   localStorage.setItem(SHEETS_TOKEN_KEY,token);
+ }
  if($('sheetsUrl'))$('sheetsUrl').value=url;
  if($('sheetsToken'))$('sheetsToken').value=token;
- return true;
+ setSheetsStatus('Connecting…','Loading existing expenses from Google Sheets.');
+ initializeBackend();
 }
+
 function saveRecords(){
  localStorage.setItem(KEY,JSON.stringify(records));
  if(excelFileHandle) syncExcelFile().catch(err=>{console.error(err);toast('Browser could not update the Excel file. Reconnect it to continue automatic saving.')});
- if(ensureSheetsConnection()) syncGoogleSheet();
+ if(ensureSheetsConnection()) syncGoogleSheet(); else setSheetsStatus('Not connected','Saved in this browser only. Complete the one-time Google Sheets setup after logging in.');
 }
 function syncGoogleSheet(){
  const url=localStorage.getItem(SHEETS_URL_KEY), token=localStorage.getItem(SHEETS_TOKEN_KEY);
@@ -354,24 +362,27 @@ clearForm();
 loadSheetsSettings();
 ['purchaseDate','paidDate'].forEach(id=>{const el=$(id);el.addEventListener('click',()=>{if(typeof el.showPicker==='function'){try{el.showPicker()}catch(e){}}});});
 render();
-// On startup, load the backend as the shared source of truth when a connection exists.
-(async function initializeBackend(){
+// Load backend records after the one-time connection has been saved.
+async function initializeBackend(){
  const url=localStorage.getItem(SHEETS_URL_KEY), token=localStorage.getItem(SHEETS_TOKEN_KEY);
- if(!url||!token)return;
+ if(!url||!token){setSheetsStatus('Not connected','Complete the one-time Google Sheets setup after login.');return;}
  try{
   const backendRecords=await fetchBackendRecords();
-  if(backendRecords.length>0 || records.length===0){
-   records=backendRecords;localStorage.setItem(KEY,JSON.stringify(records));render();
-   setSheetsStatus('Connected','Loaded '+records.length+' records from Google Sheets.');
-  } else {
-   // First-time migration: browser has entries but the backend is empty.
-   syncGoogleSheet();
+  // If the backend is empty but this browser has legacy records, migrate them once.
+  if(backendRecords.length===0 && records.length>0){
+    setSheetsStatus('Migrating records…','The sheet is empty; sending this browser’s existing records once.');
+    await syncGoogleSheet();
+    return;
   }
+  records=backendRecords;
+  localStorage.setItem(KEY,JSON.stringify(records));render();
+  setSheetsStatus('Connected','Loaded '+records.length+' records from Google Sheets.');
  }catch(err){
   setSheetsStatus('Backend unavailable','Could not load Google Sheets records: '+err.message);
   console.error('Backend load failed',err);
  }
-})();
+}
+if(sessionStorage.getItem(APP_UNLOCK_KEY)==='1') initializeBackend();
 </script>
 </body>
 </html>
